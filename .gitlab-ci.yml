@@ -1,0 +1,12 @@
+image: mozilla/sbt:8u232_1.3.13
+
+test:
+  cache:
+    paths:
+      - "sbt-cache/sbtboot"
+      - "sbt-cache/boot"
+      - "sbt-cache/ivy/cache"
+  variables:
+    SBT_OPTS: "-Dsbt.global.base=sbt-cache/sbtboot -Dsbt.boot.directory=sbt-cache/boot -Dsbt.ivy.home=sbt-cache/ivy"
+  script:
+    - sbt test
