@@ -1,1 +1,4 @@
-GET     /                           controllers.HomeController.index()
+POST   /users        user.UserController.create()
+GET    /users        user.UserController.retrieve(firstName: Option[String], lastName: Option[String], email: Option[String], limit: Option[Int], offset: Option[Int])
+PUT    /users        user.UserController.update()
+DELETE /users/:id    user.UserController.delete(id: Long)
