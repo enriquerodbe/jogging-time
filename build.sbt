@@ -15,6 +15,7 @@ val silhouetteVersion = "7.0.0"
 
 libraryDependencies ++= Seq(
   guice,
+  ws,
   "net.codingwell" %% "scala-guice" % "4.2.11",
   "com.typesafe.play" %% "play-slick-evolutions" % "5.0.0",
   "com.h2database" % "h2" % "1.4.200",
