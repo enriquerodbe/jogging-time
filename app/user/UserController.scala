@@ -1,14 +1,15 @@
 package user
 
-import user.auth.AuthEnv
 import com.mohiva.play.silhouette.api.Silhouette
-import domain.{Page, User}
+import domain.UserRole.{Admin, Manager}
+import domain.{Page, User, UserRole}
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, Reads}
 import play.api.mvc.{BaseController, ControllerComponents}
 import scala.concurrent.ExecutionContext
-import util.filter.FilterExpression.stringEq
-import util.filter.FilterOptions
+import auth.{AuthEnv, Is, OnlyModifies}
+import filter.FilterExpression.stringEq
+import filter.FilterOptions
 
 @Singleton
 class UserController @Inject()(
@@ -17,16 +18,22 @@ class UserController @Inject()(
     userService: UserService)(
     implicit ec: ExecutionContext) extends BaseController {
 
-  private implicit val userFormat = Json.format[User]
-  private implicit val userWithPasswordFormat = Json.format[UserWithPassword]
-  private implicit val pageWrites = Json.format[Page[User]]
+  private implicit val userWrites = Json.writes[User]
+  private implicit val userDtoReads = Json.reads[UserDto]
+  private implicit val pageWrites = Json.writes[Page[User]]
+  implicit val userRoleReads = Reads.enumNameReads(UserRole)
+  private implicit val userRoleDtoReads = Json.reads[UserRoleDto]
 
-  def create() = {
-    silhouette.UnsecuredAction.async(parse.json[UserWithPassword]) { request =>
-      userService
-        .create(request.body.user, request.body.password)
-        .map(u => Created(Json.toJson(u)))
-    }
+  private val isManagerOrAdmin =
+    silhouette.SecuredAction(Is(Manager) || Is(Admin))
+
+  private val canPromoteUser =
+    silhouette.SecuredAction(Is(Manager) && OnlyModifies(Manager) || Is(Admin))
+
+  def create() = Action.async(parse.json[UserDto]) { request =>
+    userService
+      .create(request.body.user, request.body.password)
+      .map(u => Created(Json.toJson(u)))
   }
 
   def retrieve(
@@ -34,24 +41,32 @@ class UserController @Inject()(
       lastName: Option[String],
       email: Option[String],
       limit: Option[Int],
-      offset: Option[Int]) = silhouette.SecuredAction.async {
-    val filter =
-      stringEq(UserField.FirstName, firstName)
-        .and(stringEq(UserField.LastName, lastName))
-        .and(stringEq(UserField.Email, email))
+      offset: Option[Int]) = isManagerOrAdmin.async {
+        val filter =
+          stringEq(UserField.FirstName, firstName)
+            .and(stringEq(UserField.LastName, lastName))
+            .and(stringEq(UserField.Email, email))
 
-    userService
-      .retrieve(FilterOptions(filter, limit, offset))
-      .map(u => Ok(Json.toJson(u)))
+        userService
+          .retrieve(FilterOptions(filter, limit, offset))
+          .map(u => Ok(Json.toJson(u)))
+      }
+
+  def update(id: Long) = {
+    isManagerOrAdmin.async(parse.json[UserDto]) { request =>
+      userService.update(request.body.user.copy(id = id)).map(_ => NoContent)
+    }
   }
 
-  def update() = silhouette.SecuredAction.async(parse.json[User]) { request =>
-    userService.update(request.body).map(_ => Ok)
+  def updateRoles(id: Long) = {
+    canPromoteUser.async(parse.json[UserRoleDto]) { request =>
+      userService
+        .updateRoles(id, request.body.add, request.body.remove)
+        .map(_ => NoContent)
+    }
   }
 
-  def delete(id: Long) = silhouette.SecuredAction.async {
-    userService.delete(id).map(_ => Ok)
+  def delete(id: Long) = isManagerOrAdmin.async {
+    userService.delete(id).map(_ => NoContent)
   }
 }
-
-case class UserWithPassword(user: User, password: String)

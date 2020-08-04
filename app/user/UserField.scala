@@ -1,6 +1,6 @@
 package user
 
-import util.filter.Field
+import filter.Field
 
 private[user] sealed trait UserField[T] extends Field[T]
 

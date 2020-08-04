@@ -7,14 +7,14 @@ import javax.inject.Inject
 import play.api.db.slick.DatabaseConfigProvider
 import scala.concurrent.{ExecutionContext, Future}
 
-private[user] class PasswordDao @Inject()(
+class PasswordDao @Inject()(
     val dbConfigProvider: DatabaseConfigProvider)(
     implicit ec: ExecutionContext)
   extends PasswordsTable with DelegableAuthInfoDAO[PasswordInfo] {
 
   import profile.api._
 
-  implicit val classTag = scala.reflect.classTag[PasswordInfo]
+  override implicit val classTag = scala.reflect.classTag[PasswordInfo]
 
   override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
     val query =

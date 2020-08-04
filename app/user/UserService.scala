@@ -2,9 +2,10 @@ package user
 
 import com.google.inject.ImplementedBy
 import com.mohiva.play.silhouette.api.services.IdentityService
+import domain.UserRole.UserRole
 import domain.{Page, User}
 import scala.concurrent.Future
-import util.filter.FilterOptions
+import filter.FilterOptions
 
 @ImplementedBy(classOf[UserServiceImpl])
 trait UserService extends IdentityService[User] {
@@ -14,6 +15,11 @@ trait UserService extends IdentityService[User] {
   def retrieve(filter: FilterOptions): Future[Page[User]]
 
   def update(user: User): Future[Unit]
+
+  def updateRoles(
+      userId: Long,
+      add: Set[UserRole],
+      remove: Set[UserRole]): Future[Unit]
 
   def delete(id: Long): Future[Unit]
 }

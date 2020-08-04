@@ -1,4 +1,4 @@
-package user.auth
+package auth
 
 import com.google.inject.{AbstractModule, Provides}
 import com.mohiva.play.silhouette.api._

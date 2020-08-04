@@ -1,4 +1,4 @@
-package util.filter
+package filter
 
 import play.api.db.slick.HasDatabaseConfigProvider
 import slick.jdbc.JdbcProfile

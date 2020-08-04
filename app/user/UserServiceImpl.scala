@@ -3,14 +3,15 @@ package user
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordHasher
 import com.mohiva.play.silhouette.impl.providers.BasicAuthProvider
+import domain.UserRole.UserRole
 import domain.{Page, User}
 import javax.inject.Inject
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import scala.concurrent.{ExecutionContext, Future}
 import slick.jdbc.JdbcProfile
 import user.password.PasswordDao
-import util.filter.FilterExpression.stringEq
-import util.filter.FilterOptions
+import filter.FilterExpression.stringEq
+import filter.FilterOptions
 
 private[user] class UserServiceImpl @Inject()(
     val dbConfigProvider: DatabaseConfigProvider,
@@ -45,6 +46,18 @@ private[user] class UserServiceImpl @Inject()(
 
   override def update(user: User): Future[Unit] = {
     db.run(userDao.update(user)).map(_ => ())
+  }
+
+  override def updateRoles(
+      userId: Long,
+      add: Set[UserRole],
+      remove: Set[UserRole]): Future[Unit] = {
+    val query = for {
+      user <- userDao.retrieve(userId)
+      _ <- userDao.updateRoles(user.id, user.roles ++ add -- remove)
+    } yield ()
+
+    db.run(query.transactionally)
   }
 
   override def delete(id: Long): Future[Unit] = {

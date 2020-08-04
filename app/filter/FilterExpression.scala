@@ -1,4 +1,4 @@
-package util.filter
+package filter
 
 sealed trait FilterExpression {
 

@@ -1,4 +1,4 @@
-package util.filter
+package filter
 
 case class FilterOptions(condition: FilterExpression, limit: Int, offset: Int)
 
