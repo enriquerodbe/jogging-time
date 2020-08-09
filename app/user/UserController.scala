@@ -1,21 +1,22 @@
 package user
 
+import auth.{AuthEnv, Is, OnlyModifies}
 import com.mohiva.play.silhouette.api.Silhouette
 import domain.UserRole.{Admin, Manager}
 import domain.{Page, User, UserRole}
+import filter.FilterOptions
 import javax.inject.{Inject, Singleton}
+import parser.UserFilterQueryParser
 import play.api.libs.json.{Json, Reads}
 import play.api.mvc.{BaseController, ControllerComponents}
-import scala.concurrent.ExecutionContext
-import auth.{AuthEnv, Is, OnlyModifies}
-import filter.FilterExpression.stringEq
-import filter.FilterOptions
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UserController @Inject()(
     val controllerComponents: ControllerComponents,
     silhouette: Silhouette[AuthEnv],
-    userService: UserService)(
+    userService: UserService,
+    filterQueryParser: UserFilterQueryParser)(
     implicit ec: ExecutionContext) extends BaseController {
 
   private implicit val userWrites = Json.writes[User]
@@ -36,21 +37,15 @@ class UserController @Inject()(
       .map(u => Created(Json.toJson(u)))
   }
 
-  def retrieve(
-      firstName: Option[String],
-      lastName: Option[String],
-      email: Option[String],
-      limit: Option[Int],
-      offset: Option[Int]) = isManagerOrAdmin.async {
-        val filter =
-          stringEq(UserField.FirstName, firstName)
-            .and(stringEq(UserField.LastName, lastName))
-            .and(stringEq(UserField.Email, email))
-
-        userService
-          .retrieve(FilterOptions(filter, limit, offset))
-          .map(u => Ok(Json.toJson(u)))
-      }
+  def retrieve(filter: String, limit: Option[Int], offset: Option[Int]) = {
+    isManagerOrAdmin.async {
+      for {
+        filterExpression <- Future.fromTry(filterQueryParser.parse(filter))
+        filterOptions = FilterOptions(filterExpression, limit, offset)
+        result <- userService.retrieve(filterOptions)
+      } yield Ok(Json.toJson(result))
+    }
+  }
 
   def update(id: Long) = {
     isManagerOrAdmin.async(parse.json[UserDto]) { request =>

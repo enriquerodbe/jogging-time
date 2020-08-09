@@ -1,7 +1,7 @@
 package record
 
 import domain.{Page, Record}
-import filter.{EmptyExpression, FilterOptions}
+import filter.FilterOptions
 import javax.inject.Inject
 import play.api.Logger
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
@@ -23,10 +23,9 @@ private[record] class RecordServiceImpl @Inject()(
       weatherService
         .retrieve(record.location, record.date)
         .map(Some(_))
-        .recover {
-          case ex =>
-            logger.warn(s"Error retrieving weather conditions for $record", ex)
-            None
+        .recover { case ex =>
+          logger.warn(s"Error retrieving weather conditions for $record", ex)
+          None
         }
 
     for {
@@ -35,21 +34,12 @@ private[record] class RecordServiceImpl @Inject()(
     } yield result
   }
 
-  override def retrieve(userId: Long): Future[Page[Record]] = {
-    val filter = FilterOptions(EmptyExpression)
+  override def retrieve(
+      maybeUserId: Option[Long],
+      filter: FilterOptions): Future[Page[Record]] = {
     val query = for {
-      results <- recordDao.retrieve(userId, filter)
-      total <- recordDao.count(userId, filter)
-    } yield Page(results, total, results.size, filter.offset)
-
-    db.run(query)
-  }
-
-  override def retrieveAll(maybeUserId: Option[Long]): Future[Page[Record]] = {
-    val filter = FilterOptions(EmptyExpression)
-    val query = for {
-      results <- recordDao.retrieve(filter)
-      total <- recordDao.count(filter)
+      results <- recordDao.retrieve(maybeUserId, filter)
+      total <- recordDao.count(maybeUserId, filter)
     } yield Page(results, total, results.size, filter.offset)
 
     db.run(query)

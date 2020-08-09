@@ -1,10 +1,10 @@
 POST   /users           user.UserController.create()
-GET    /users           user.UserController.retrieve(firstName: Option[String], lastName: Option[String], email: Option[String], limit: Option[Int], offset: Option[Int])
+GET    /users           user.UserController.retrieve(filter: String, limit: Option[Int], offset: Option[Int])
 PUT    /users/:id       user.UserController.update(id: Long)
 PUT    /users/:id/roles user.UserController.updateRoles(id: Long)
 DELETE /users/:id       user.UserController.delete(id: Long)
 
 POST   /records           record.RecordController.create()
-GET    /records           record.RecordController.retrieveAll()
+GET    /records           record.RecordController.retrieve(filter: String, limit: Option[Int], offset: Option[Int])
 PUT    /records/:recordId record.RecordController.update(recordId: Long)
 DELETE /records/:recordId record.RecordController.delete(recordId: Long)

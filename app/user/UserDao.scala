@@ -2,13 +2,12 @@ package user
 
 import domain.User
 import domain.UserRole.UserRole
+import filter._
 import javax.inject.Inject
 import play.api.db.slick.DatabaseConfigProvider
-import filter.{FilterDao, _}
 
 private[user] class UserDao @Inject()(
-    val dbConfigProvider: DatabaseConfigProvider)
-  extends UsersTable with FilterDao {
+    val dbConfigProvider: DatabaseConfigProvider) extends UsersTable {
 
   import profile.api._
 

@@ -4,14 +4,13 @@ import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordHasher
 import com.mohiva.play.silhouette.impl.providers.BasicAuthProvider
 import domain.UserRole.UserRole
-import domain.{Page, User}
+import domain.{Page, User, UserField}
+import filter.{Eq, FilterOptions}
 import javax.inject.Inject
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import scala.concurrent.{ExecutionContext, Future}
 import slick.jdbc.JdbcProfile
 import user.password.PasswordDao
-import filter.FilterExpression.stringEq
-import filter.FilterOptions
 
 private[user] class UserServiceImpl @Inject()(
     val dbConfigProvider: DatabaseConfigProvider,
@@ -65,7 +64,7 @@ private[user] class UserServiceImpl @Inject()(
   }
 
   override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = {
-    val condition = stringEq(UserField.Email, Some(loginInfo.providerKey))
+    val condition = Eq(UserField.Email, loginInfo.providerKey)
     retrieve(FilterOptions(condition)).map(_.results.headOption)
   }
 }

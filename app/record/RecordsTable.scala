@@ -1,20 +1,15 @@
 package record
 
-import domain.{Distance, Location, Record, WeatherConditions}
-import filter.{Field, FilterTable}
+import domain.{Distance, Location, Record, RecordField, WeatherConditions}
+import filter.{Field, FilterDao, FilterTable}
 import java.time.{Duration, Instant}
 import play.api.db.slick.HasDatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
 private[record] trait RecordsTable
-  extends HasDatabaseConfigProvider[JdbcProfile] {
+  extends HasDatabaseConfigProvider[JdbcProfile] with FilterDao {
 
   import profile.api._
-
-  implicit val distanceMapper =
-    MappedColumnType.base[Distance, Int](_.value, Distance)
-  implicit val durationMapper =
-    MappedColumnType.base[Duration, Long](_.toSeconds, Duration.ofSeconds)
 
   class Records(tag: Tag)
     extends Table[Record](tag, "records") with FilterTable {
@@ -44,7 +39,15 @@ private[record] trait RecordsTable
         .<>(Record.tupled, Record.unapply)
     }
 
-    override def getColumn[T](field: Field[T]): Rep[T] = ???
+    override def getColumn[T](field: Field[T]): Rep[T] = {
+      (field match {
+        case RecordField.Date => date
+        case RecordField.Distance => distance
+        case RecordField.Duration => duration
+        case RecordField.LocationLat => locationLat
+        case RecordField.LocationLon => locationLon
+      }).asInstanceOf[Rep[T]]
+    }
   }
 
   val records = TableQuery[Records]

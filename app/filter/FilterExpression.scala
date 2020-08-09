@@ -7,24 +7,15 @@ sealed trait FilterExpression {
   def isEmpty: Boolean = false
 }
 
-case object EmptyExpression extends FilterExpression {
-
-  override def and(other: FilterExpression): FilterExpression = other
-  override def or(other: FilterExpression): FilterExpression = other
-  override def isEmpty: Boolean = true
-}
-
-case class StringEq(field: Field[String], value: String) extends FilterExpression
-case class StringNe(field: Field[String], value: String) extends FilterExpression
+case class Eq[T](field: Field[T], value: T) extends FilterExpression
+case class Ne[T](field: Field[T], value: T) extends FilterExpression
+case class Gt[T](field: Field[T], value: T) extends FilterExpression
+case class Lt[T](field: Field[T], value: T) extends FilterExpression
 
 case class And(
-    exp1: FilterExpression, exp2: FilterExpression) extends FilterExpression
+    expr1: FilterExpression,
+    expr2: FilterExpression) extends FilterExpression
+
 case class Or(
-    exp1: FilterExpression, exp2: FilterExpression) extends FilterExpression
-
-object FilterExpression {
-
-  def stringEq(field: Field[String], value: Option[String]): FilterExpression = {
-    value.map(StringEq(field, _)).getOrElse(EmptyExpression)
-  }
-}
+    expr1: FilterExpression,
+    expr2: FilterExpression) extends FilterExpression

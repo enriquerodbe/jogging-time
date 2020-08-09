@@ -1,20 +1,15 @@
 package user
 
-import domain.{User, UserRole}
 import domain.UserRole.UserRole
-import filter.{Field, FilterTable}
+import domain.{User, UserField}
+import filter.{Field, FilterDao, FilterTable}
 import play.api.db.slick.HasDatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
-private[user] trait UsersTable extends HasDatabaseConfigProvider[JdbcProfile] {
+private[user] trait UsersTable
+  extends HasDatabaseConfigProvider[JdbcProfile] with FilterDao {
 
   import profile.api._
-
-  implicit val rolesMapper =
-    MappedColumnType.base[Set[UserRole], String](
-      _.mkString(","),
-      _.split(",").filterNot(_.isEmpty).map(UserRole.withName).toSet
-    )
 
   class Users(tag: Tag) extends Table[User](tag, "users") with FilterTable {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
@@ -28,14 +23,12 @@ private[user] trait UsersTable extends HasDatabaseConfigProvider[JdbcProfile] {
         .<>((User.apply _).tupled, User.unapply)
     }
 
-    override def getColumn[T](field: Field[T]): Rep[T] = {
-      field match {
-        case f: UserField[_] => (f match {
-          case UserField.FirstName => firstName
-          case UserField.LastName => lastName
-          case UserField.Email => email
-        }).asInstanceOf[Rep[T]]
-      }
+    override def getColumn[T](field: Field[T]): Rep[T] = field match {
+      case f: UserField => (f match {
+        case UserField.FirstName => firstName
+        case UserField.LastName => lastName
+        case UserField.Email => email
+      }).asInstanceOf[Rep[T]]
     }
   }
 

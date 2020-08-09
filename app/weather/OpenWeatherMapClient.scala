@@ -10,7 +10,7 @@ import play.api.libs.ws.WSClient
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.DurationConverters.JavaDurationOps
 
-class OpenWeatherMapClient @Inject()(
+private[weather] class OpenWeatherMapClient @Inject()(
     ws: WSClient,
     config: Config)(
     implicit ec: ExecutionContext) extends WeatherService {

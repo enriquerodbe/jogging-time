@@ -22,6 +22,7 @@ libraryDependencies ++= Seq(
   "com.mohiva" %% "play-silhouette" % silhouetteVersion,
   "com.mohiva" %% "play-silhouette-password-bcrypt" % silhouetteVersion,
   "com.mohiva" %% "play-silhouette-persistence" % silhouetteVersion,
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
   "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % Test,
 )
 

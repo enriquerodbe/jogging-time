@@ -1,45 +1,31 @@
 package record
 
 import domain.Record
-import filter.{FilterDao, FilterOptions}
+import filter.FilterOptions
 import javax.inject.Inject
 import play.api.db.slick.DatabaseConfigProvider
 
 private[record] class RecordDao @Inject()(
-    val dbConfigProvider: DatabaseConfigProvider)
-  extends RecordsTable with FilterDao {
+    val dbConfigProvider: DatabaseConfigProvider) extends RecordsTable {
 
   import profile.api._
 
   def create(record: Record): DBIO[Record] = recordsInsert += record
 
-  def retrieve(userId: Long, filter: FilterOptions): DBIO[Seq[Record]] = {
+  def retrieve(
+      maybeUserId: Option[Long],
+      filter: FilterOptions): DBIO[Seq[Record]] = {
     records
-      .filter(_.userId === userId)
+      .filterOpt(maybeUserId)(_.userId === _)
       .filter(buildCondition(filter.condition, _))
       .drop(filter.offset)
       .take(filter.limit)
       .result
   }
 
-  def count(userId: Long, filter: FilterOptions): DBIO[Int] = {
+  def count(userId: Option[Long], filter: FilterOptions): DBIO[Int] = {
     records
-      .filter(_.userId === userId)
-      .filter(buildCondition(filter.condition, _))
-      .length
-      .result
-  }
-
-  def retrieve(filter: FilterOptions): DBIO[Seq[Record]] = {
-    records
-      .filter(buildCondition(filter.condition, _))
-      .drop(filter.offset)
-      .take(filter.limit)
-      .result
-  }
-
-  def count(filter: FilterOptions): DBIO[Int] = {
-    records
+      .filterOpt(userId)(_.userId === _)
       .filter(buildCondition(filter.condition, _))
       .length
       .result
