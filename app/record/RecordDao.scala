@@ -8,7 +8,7 @@ import javax.inject.Inject
 import play.api.db.slick.DatabaseConfigProvider
 import scala.concurrent.ExecutionContext
 
-private[record] class RecordDao @Inject()(
+class RecordDao @Inject()(
     val dbConfigProvider: DatabaseConfigProvider)(
     implicit ec: ExecutionContext) extends RecordsTable {
 
@@ -29,6 +29,14 @@ private[record] class RecordDao @Inject()(
       .result
   }
 
+  def count(userId: Option[Long], filter: FilterOptions): DBIO[Int] = {
+    records
+      .filterOpt(userId)(_.userId === _)
+      .filter(buildCondition(filter.condition, _))
+      .length
+      .result
+  }
+
   def retrieveAverages(
       userIds: Seq[Long],
       days: Int): DBIO[Seq[AverageReport]] = {
@@ -39,20 +47,12 @@ private[record] class RecordDao @Inject()(
       }
       .groupBy(_.userId)
       .map { case (userId, records) =>
-        val speeds = records.map(r => div(r.distance, r.duration))
+        val speeds = records.map(r => div(r.distance.asColumnOf[Double], r.duration))
         val distances = records.map(_.distance)
         (userId, speeds.avg, distances.avg)
       }
       .result
       .map(_.map((AverageReport.fromRow _).tupled))
-  }
-
-  def count(userId: Option[Long], filter: FilterOptions): DBIO[Int] = {
-    records
-      .filterOpt(userId)(_.userId === _)
-      .filter(buildCondition(filter.condition, _))
-      .length
-      .result
   }
 
   def update(record: Record): DBIO[Int] = {

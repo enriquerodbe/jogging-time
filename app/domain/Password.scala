@@ -1,6 +1,6 @@
-package user.password
+package domain
 
-private[password] case class Password(
+case class Password(
     userEmail: String,
     hasher: String,
     hash: String,

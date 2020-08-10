@@ -3,6 +3,7 @@ package user.password
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
+import domain.Password
 import javax.inject.Inject
 import play.api.db.slick.DatabaseConfigProvider
 import scala.concurrent.{ExecutionContext, Future}
@@ -44,32 +45,20 @@ class PasswordDao @Inject()(
 
   override def update(
       loginInfo: LoginInfo,
-      authInfo: PasswordInfo): Future[PasswordInfo] = {
-    val query = passwords
-      .filter(_.userEmail === loginInfo.providerKey)
-      .map(p => (p.hasher, p.hash, p.salt))
-      .update((authInfo.hasher, authInfo.password, authInfo.salt))
-      .map(_ => authInfo)
-
-    db.run(query)
-  }
+      authInfo: PasswordInfo): Future[PasswordInfo] = ???
 
   override def save(
       loginInfo: LoginInfo,
-      authInfo: PasswordInfo): Future[PasswordInfo] = {
-    find(loginInfo).flatMap {
-      case Some(_) => update(loginInfo, authInfo)
-      case None => add(loginInfo, authInfo)
-    }
+      authInfo: PasswordInfo): Future[PasswordInfo] = ???
+
+  def removeAction(loginInfo: LoginInfo): DBIO[Unit] = {
+    passwords
+      .filter(_.userEmail === loginInfo.providerKey)
+      .delete
+      .map(_ => ())
   }
 
   override def remove(loginInfo: LoginInfo): Future[Unit] = {
-    val query =
-      passwords
-        .filter(_.userEmail === loginInfo.providerKey)
-        .delete
-        .map(_ => ())
-
-    db.run(query)
+    db.run(removeAction(loginInfo))
   }
 }

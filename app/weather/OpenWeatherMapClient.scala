@@ -15,9 +15,9 @@ private[weather] class OpenWeatherMapClient @Inject()(
     config: Config)(
     implicit ec: ExecutionContext) extends WeatherService {
 
-  val baseUrl = "http://api.openweathermap.org/data/2.5/onecall/timemachine"
-  val openWeatherMapAppId = config.getString("openWeatherMap.appid")
-  val openWeatherMapTimeout = config.getDuration("openWeatherMap.timeout")
+  val baseUrl = config.getString("openWeatherMap.baseUrl")
+  val appId = config.getString("openWeatherMap.appid")
+  val timeout = config.getDuration("openWeatherMap.timeout")
 
   private implicit val weatherConditionsReads: Reads[WeatherConditions] = (
     (__ \ "temp").read[BigDecimal] and
@@ -28,14 +28,14 @@ private[weather] class OpenWeatherMapClient @Inject()(
   override def retrieve(
       location: Location,
       date: Instant): Future[WeatherConditions] = {
-    ws.url(baseUrl)
+    ws.url(s"$baseUrl/data/2.5/onecall/timemachine")
       .withQueryStringParameters(
         "lat" -> location.lat.toString,
         "lon" -> location.lon.toString,
         "dt" -> date.getEpochSecond.toString,
         "units" -> "imperial",
-        "appid" -> openWeatherMapAppId)
-      .withRequestTimeout(openWeatherMapTimeout.toScala)
+        "appid" -> appId)
+      .withRequestTimeout(timeout.toScala)
       .get()
       .map(_.json \ "current")
       .map(_.validate[WeatherConditions].get)

@@ -19,11 +19,11 @@ class UserController @Inject()(
     filterQueryParser: UserFilterQueryParser)(
     implicit ec: ExecutionContext) extends BaseController {
 
-  private implicit val userWrites = Json.writes[User]
-  private implicit val userDtoReads = Json.reads[UserDto]
-  private implicit val pageWrites = Json.writes[Page[User]]
+  implicit val userWrites = Json.writes[User]
+  implicit val userDtoReads = Json.reads[UserDto]
+  implicit val pageWrites = Json.writes[Page[User]]
   implicit val userRoleReads = Reads.enumNameReads(UserRole)
-  private implicit val userRoleDtoReads = Json.reads[UserRoleDto]
+  implicit val userRoleDtoReads = Json.reads[UserRoleDto]
 
   private val isManagerOrAdmin =
     silhouette.SecuredAction(Is(Manager) || Is(Admin))

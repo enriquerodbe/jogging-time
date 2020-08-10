@@ -28,7 +28,7 @@ class AverageReportController @Inject()(
   def create(days: Int) = silhouette.SecuredAction(Is(Admin)).async {
     averageReportsService
       .create(days)
-      .map(reports => Ok(Json.toJson(reports)))
+      .map(reports => Created(Json.toJson(reports)))
   }
 
   def retrieve(

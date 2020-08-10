@@ -16,7 +16,7 @@ create table "passwords" (
 );
 
 insert into "users" ("email", "firstName", "lastName", "roles")
-    values ( 'admin@jogging.com', 'admin', 'admin', 'ADMIN' );
+    values ( 'admin@jogging.com', 'Admin', 'Admin', 'ADMIN' );
 insert into "passwords"
     values ( 'admin@jogging.com',
             'bcrypt',

@@ -1,9 +1,10 @@
 package user.password
 
+import domain.Password
 import play.api.db.slick.HasDatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
-private[password] trait PasswordsTable
+trait PasswordsTable
   extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import profile.api._

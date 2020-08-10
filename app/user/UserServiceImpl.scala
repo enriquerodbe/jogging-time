@@ -60,7 +60,13 @@ private[user] class UserServiceImpl @Inject()(
   }
 
   override def delete(id: Long): Future[Unit] = {
-    db.run(userDao.delete(id)).map(_ => ())
+    val query = for {
+      user <- userDao.retrieve(id)
+      _ <- passwordDao.removeAction(LoginInfo(BasicAuthProvider.ID, user.email))
+      _ <- userDao.delete(id)
+    } yield ()
+
+    db.run(query.transactionally)
   }
 
   override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = {

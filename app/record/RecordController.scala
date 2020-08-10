@@ -20,11 +20,15 @@ class RecordController @Inject()(
     filterQueryParser: RecordFilterQueryParser)(
     implicit ec: ExecutionContext) extends BaseController {
 
-  implicit val distanceFormat = Json.format[Distance]
+  implicit val distanceReads = Reads {
+    case JsNumber(value) => JsSuccess(Distance(value.intValue))
+    case other => JsError(s"Incorrect distance $other")
+  }
   implicit val durationReads = Reads {
     case JsNumber(value) => JsSuccess(Duration.ofSeconds(value.toLongExact))
     case other => JsError(s"Incorrect duration $other")
   }
+  implicit val distanceWrites = Writes[Distance](d => JsNumber(d.value))
   implicit val locationFormat = Json.format[Location]
   implicit val recordDtoReads = Json.reads[RecordDto]
   implicit val weatherConditionsWrites = Json.writes[WeatherConditions]
@@ -71,10 +75,8 @@ class RecordController @Inject()(
 
   private def getRecordOwnerId(request: SecuredRequest[AuthEnv, RecordDto]) = {
     val loggedUser = request.identity
-    if (loggedUser.is(Admin)) {
-      request.body.maybeUserId.getOrElse(loggedUser.id)
-    } else {
-      loggedUser.id
-    }
+    val maybeUserId =
+      if (loggedUser.is(Admin)) request.body.maybeUserId else None
+    maybeUserId.getOrElse(loggedUser.id)
   }
 }

@@ -25,6 +25,19 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
   "com.enragedginger" %% "akka-quartz-scheduler" % "1.8.4-akka-2.6.x",
   "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % Test,
+  "com.mohiva" %% "play-silhouette-testkit" % silhouetteVersion % Test,
 )
 
+// Disable warnings for auto-generated files
 play.sbt.routes.RoutesKeys.routesImport := Seq.empty
+
+// Scoverage
+coverageMinimum := 90
+coverageFailOnMinimum := true
+// Exclude auto-generated files from coverage report
+lazy val coverageExcludedPackagesSeq = Seq(
+  "<empty>",
+  "Reverse.*",
+  "router",
+)
+coverageExcludedPackages := coverageExcludedPackagesSeq.mkString(";")

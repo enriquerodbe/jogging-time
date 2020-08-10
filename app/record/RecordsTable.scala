@@ -6,7 +6,7 @@ import java.time.{Duration, Instant}
 import play.api.db.slick.HasDatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
-private[record] trait RecordsTable
+trait RecordsTable
   extends HasDatabaseConfigProvider[JdbcProfile] with FilterDao {
 
   import profile.api._
