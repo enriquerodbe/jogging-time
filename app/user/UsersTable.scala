@@ -6,7 +6,7 @@ import filter.{Field, FilterDao, FilterTable}
 import play.api.db.slick.HasDatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
-private[user] trait UsersTable
+trait UsersTable
   extends HasDatabaseConfigProvider[JdbcProfile] with FilterDao {
 
   import profile.api._

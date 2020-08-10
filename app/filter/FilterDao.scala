@@ -1,6 +1,6 @@
 package filter
 
-import domain.{Distance, UserRole}
+import domain.{Distance, Speed, UserRole}
 import domain.UserRole.UserRole
 import java.time.{Duration, Instant}
 import play.api.db.slick.HasDatabaseConfigProvider
@@ -14,6 +14,8 @@ trait FilterDao extends HasDatabaseConfigProvider[JdbcProfile] {
     MappedColumnType.base[Distance, Int](_.value, Distance)
   implicit val durationMapper =
     MappedColumnType.base[Duration, Long](_.toSeconds, Duration.ofSeconds)
+  implicit val speedMapper =
+    MappedColumnType.base[Speed, Double](_.value, Speed)
   implicit val rolesMapper =
     MappedColumnType.base[Set[UserRole], String](
       _.mkString(","),
@@ -47,6 +49,8 @@ trait FilterDao extends HasDatabaseConfigProvider[JdbcProfile] {
         table.getColumn(field) === value
       case Eq(field: DurationField, value: Duration) =>
         table.getColumn(field) === value
+      case Eq(field: SpeedField, value: Speed) =>
+        table.getColumn(field) === value
       case Eq(field: DoubleField, value: Double) =>
         table.getColumn(field) === value
       case _ =>
@@ -63,6 +67,8 @@ trait FilterDao extends HasDatabaseConfigProvider[JdbcProfile] {
       case Ne(field: DistanceField, value: Distance) =>
         table.getColumn(field) =!= value
       case Ne(field: DurationField, value: Duration) =>
+        table.getColumn(field) =!= value
+      case Ne(field: SpeedField, value: Speed) =>
         table.getColumn(field) =!= value
       case Ne(field: DoubleField, value: Double) =>
         table.getColumn(field) =!= value
@@ -81,6 +87,8 @@ trait FilterDao extends HasDatabaseConfigProvider[JdbcProfile] {
         table.getColumn(field) > value
       case Gt(field: DurationField, value: Duration) =>
         table.getColumn(field) > value
+      case Gt(field: SpeedField, value: Speed) =>
+        table.getColumn(field) > value
       case Gt(field: DoubleField, value: Double) =>
         table.getColumn(field) > value
       case _ =>
@@ -97,6 +105,8 @@ trait FilterDao extends HasDatabaseConfigProvider[JdbcProfile] {
       case Lt(field: DistanceField, value: Distance) =>
         table.getColumn(field) < value
       case Lt(field: DurationField, value: Duration) =>
+        table.getColumn(field) < value
+      case Lt(field: SpeedField, value: Speed) =>
         table.getColumn(field) < value
       case Lt(field: DoubleField, value: Double) =>
         table.getColumn(field) < value

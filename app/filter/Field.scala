@@ -1,6 +1,6 @@
 package filter
 
-import domain.Distance
+import domain.{Distance, Speed}
 import java.time.{Duration, Instant}
 
 trait Field[+T] {
@@ -25,4 +25,8 @@ trait DurationField extends Field[Duration] {
 
 trait DoubleField extends Field[Double] {
   override def parseValue(value: String): Double = value.toDouble
+}
+
+trait SpeedField extends Field[Speed] {
+  override def parseValue(value: String): Speed = Speed(value.toDouble)
 }

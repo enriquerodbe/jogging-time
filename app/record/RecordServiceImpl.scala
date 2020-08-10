@@ -1,6 +1,6 @@
 package record
 
-import domain.{Page, Record}
+import domain.{AverageReport, Page, Record}
 import filter.FilterOptions
 import javax.inject.Inject
 import play.api.Logger
@@ -43,6 +43,12 @@ private[record] class RecordServiceImpl @Inject()(
     } yield Page(results, total, results.size, filter.offset)
 
     db.run(query)
+  }
+
+  override def retrieveAverages(
+      userIds: Seq[Long],
+      days: Int): Future[Seq[AverageReport]] = {
+    db.run(recordDao.retrieveAverages(userIds, days))
   }
 
   override def update(record: Record): Future[Unit] = {
