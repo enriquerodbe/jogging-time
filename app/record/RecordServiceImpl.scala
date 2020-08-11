@@ -2,13 +2,14 @@ package record
 
 import domain.{AverageReport, Page, Record}
 import filter.FilterOptions
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import scala.concurrent.{ExecutionContext, Future}
 import slick.jdbc.JdbcProfile
 import weather.WeatherService
 
+@Singleton
 private[record] class RecordServiceImpl @Inject()(
     val dbConfigProvider: DatabaseConfigProvider,
     weatherService: WeatherService,

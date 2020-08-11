@@ -3,12 +3,13 @@ package record
 import domain.Distance
 import fixture.Fixture.adminRequest
 import fixture.{BaseSpec, Fixture}
+import java.time.temporal.ChronoUnit
 import java.time.{Duration, Instant}
 import play.api.libs.json.JsObject
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
-class RecordControllerSpec extends BaseSpec {
+class RecordFunctionalSpec extends BaseSpec {
 
   import dbConfig.profile.api._
 
@@ -40,6 +41,32 @@ class RecordControllerSpec extends BaseSpec {
       val result = execute(recordDao.records.filter(_.id === recordId))
       result must have size 1
       result.head.userId mustEqual Fixture.hannah.id
+      result.head.weather.map(_.humidity) mustEqual Some(66)
+    }
+    "not fail when weather API fails" in {
+      val requestBody =
+        RecordDto(
+          None,
+          Instant.now().minus(6, ChronoUnit.DAYS),
+          Distance(3500),
+          Duration.ofMinutes(15),
+          Fixture.location)
+
+      val request =
+        FakeRequest()
+          .withHeaders(Fixture.hannahAuthHeader)
+          .withBody(requestBody)
+
+      val response = recordController.create()(request)
+      val json = contentAsJson(response)
+      (json \ "userId").as[Long] mustEqual Fixture.hannah.id
+
+      val recordId = (json \ "id").as[Long]
+      val result = execute(recordDao.records.filter(_.id === recordId))
+      result must have size 1
+      result.head.userId mustEqual Fixture.hannah.id
+      result.head.weather mustBe empty
+      status(response) mustEqual CREATED
     }
     "force record to owner" in {
       val requestBody =
@@ -103,7 +130,7 @@ class RecordControllerSpec extends BaseSpec {
       val request = FakeRequest().withHeaders(Fixture.hannahAuthHeader)
       val filter =
         "((duration lt 'PT40M' or distance lt 5000) and date ne '2020-08-08T00:00:00Z') and " +
-          "date lt '2020-08-08T00:00:00Z' and (duration ne 'PT25M' and distance gt 1000)"
+          "date lt '2020-08-08T00:00:00Z' and (duration ne 'PT25M' and lon gt 10.1)"
       val limit = None
       val offset = None
 

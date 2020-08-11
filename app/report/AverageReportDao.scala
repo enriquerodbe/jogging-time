@@ -4,10 +4,11 @@ import domain.AverageReport
 import filter.{FilterExpression, FilterOptions}
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import play.api.db.slick.DatabaseConfigProvider
 import user.UsersTable
 
+@Singleton
 class AverageReportDao @Inject()(
     val dbConfigProvider: DatabaseConfigProvider)
   extends AverageReportsTable with UsersTable {

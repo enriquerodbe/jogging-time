@@ -1,6 +1,7 @@
 package weather
 import domain.{Location, WeatherConditions}
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import scala.concurrent.Future
 
 class MockWeatherService extends WeatherService {
@@ -8,6 +9,11 @@ class MockWeatherService extends WeatherService {
   override def retrieve(
       location: Location,
       date: Instant): Future[WeatherConditions] = {
-    Future.successful(WeatherConditions(21.2, 66, 10))
+    if (date.isBefore(Instant.now().minus(5, ChronoUnit.DAYS))) {
+      val msg = "Requested time is out of allowed range of 5 days back"
+      Future.failed(new Exception(msg))
+    } else {
+      Future.successful(WeatherConditions(21.2, 66, 10))
+    }
   }
 }

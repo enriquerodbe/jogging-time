@@ -3,9 +3,10 @@ package user
 import domain.User
 import domain.UserRole.UserRole
 import filter._
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import play.api.db.slick.DatabaseConfigProvider
 
+@Singleton
 private[user] class UserDao @Inject()(
     val dbConfigProvider: DatabaseConfigProvider) extends UsersTable {
 

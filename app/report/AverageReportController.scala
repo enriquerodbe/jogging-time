@@ -5,12 +5,13 @@ import com.mohiva.play.silhouette.api.Silhouette
 import domain.{AverageReport, Distance, Page, Speed}
 import domain.UserRole.Admin
 import filter.FilterOptions
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import parser.AverageReportFilterQueryParser
 import play.api.libs.json.{JsNumber, Json, Writes}
 import play.api.mvc.{BaseController, ControllerComponents}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class AverageReportController @Inject()(
     val controllerComponents: ControllerComponents,
     averageReportsService: AverageReportService,

@@ -1,7 +1,7 @@
 package user
 
 import domain.User
-import domain.UserRole.Manager
+import domain.UserRole.{Admin, Manager}
 import fixture.BaseSpec
 import fixture.Fixture._
 import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException
@@ -10,7 +10,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import user.password.PasswordDao
 
-class UserControllerSpec extends BaseSpec {
+class UserFunctionalSpec extends BaseSpec {
 
   import dbConfig.profile.api._
 
@@ -53,6 +53,16 @@ class UserControllerSpec extends BaseSpec {
   }
 
   "retrieve" should {
+    "filter users by first name" in {
+      val filter = "firstName eq 'Jonas'"
+      val response = userController.retrieve(filter, None, None)(adminRequest)
+      val responseBody = contentAsJson(response)
+
+      (responseBody \ "count").as[Int] mustEqual 1
+      (responseBody \ "results").as[Seq[JsObject]].foreach { user =>
+        (user \ "firstName").as[String] mustEqual "Jonas"
+      }
+    }
     "filter users by last name" in {
       val filter = "lastName gt 'Doppler'"
       val response = userController.retrieve(filter, None, None)(adminRequest)
@@ -121,6 +131,19 @@ class UserControllerSpec extends BaseSpec {
 
       val result = execute(userDao.users.filter(_.id === mikkel.id))
       result.head.roles must contain only Manager
+    }
+    "deny a manager promote to admin" in {
+      val request =
+        FakeRequest()
+          .withHeaders(hannahAuthHeader)
+          .withBody(UserRoleDto(Set(Admin), Set.empty))
+
+      val response = userController.updateRoles(mikkel.id)(request)
+
+      status(response) mustEqual FORBIDDEN
+
+      val result = execute(userDao.users.filter(_.id === mikkel.id))
+      result.head.roles must not contain Admin
     }
   }
 

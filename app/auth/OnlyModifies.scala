@@ -17,7 +17,6 @@ case class OnlyModifies(role: UserRole)
       implicit request: Request[B]): Future[Boolean] = {
     val result = request.body match {
       case UserRoleDto(add, remove) => (add ++ remove).forall(_ == role)
-      case _ => false
     }
     Future.successful(result)
   }

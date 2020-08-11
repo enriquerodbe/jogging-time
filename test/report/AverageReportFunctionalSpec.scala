@@ -8,7 +8,7 @@ import play.api.libs.json.JsObject
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
-class AverageReportControllerSpec extends BaseSpec {
+class AverageReportFunctionalSpec extends BaseSpec {
 
   val averageReportController = instanceOf[AverageReportController]
   val averageReportDao = instanceOf[AverageReportDao]

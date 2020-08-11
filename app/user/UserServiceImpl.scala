@@ -6,12 +6,13 @@ import com.mohiva.play.silhouette.impl.providers.BasicAuthProvider
 import domain.UserRole.UserRole
 import domain.{Page, User, UserField}
 import filter.{Eq, FilterOptions}
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import scala.concurrent.{ExecutionContext, Future}
 import slick.jdbc.JdbcProfile
 import user.password.PasswordDao
 
+@Singleton
 private[user] class UserServiceImpl @Inject()(
     val dbConfigProvider: DatabaseConfigProvider,
     userDao: UserDao,
