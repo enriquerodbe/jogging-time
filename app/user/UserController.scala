@@ -24,6 +24,7 @@ class UserController @Inject()(
   implicit val pageWrites = Json.writes[Page[User]]
   implicit val userRoleReads = Reads.enumNameReads(UserRole)
   implicit val userRoleDtoReads = Json.reads[UserRoleDto]
+  implicit val changePasswordDtoReads = Json.reads[ChangePasswordDto]
 
   private val isManagerOrAdmin =
     silhouette.SecuredAction(Is(Manager) || Is(Admin))
@@ -37,14 +38,15 @@ class UserController @Inject()(
       .map(u => Created(Json.toJson(u)))
   }
 
-  def retrieve(filter: String, limit: Option[Int], offset: Option[Int]) = {
-    isManagerOrAdmin.async {
-      for {
-        filterExpression <- Future.fromTry(filterQueryParser.parse(filter))
-        filterOptions = FilterOptions(filterExpression, limit, offset)
-        result <- userService.retrieve(filterOptions)
-      } yield Ok(Json.toJson(result))
-    }
+  def retrieve(
+      filter: Option[String],
+      limit: Option[Int],
+      offset: Option[Int]) = isManagerOrAdmin.async {
+    for {
+      filterExpression <- Future.fromTry(filterQueryParser.parse(filter))
+      filterOptions = FilterOptions(filterExpression, limit, offset)
+      result <- userService.retrieve(filterOptions)
+    } yield Ok(Json.toJson(result))
   }
 
   def update(id: Long) = {
@@ -58,6 +60,15 @@ class UserController @Inject()(
       userService
         .updateRoles(id, request.body.add, request.body.remove)
         .map(_ => NoContent)
+    }
+  }
+
+  def updatePassword() = {
+    silhouette.SecuredAction.async(parse.json[ChangePasswordDto]) {
+      request =>
+        userService
+          .updatePassword(request.identity.id, request.body.password)
+          .map(_ => NoContent)
     }
   }
 

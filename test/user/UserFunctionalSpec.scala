@@ -54,7 +54,7 @@ class UserFunctionalSpec extends BaseSpec {
 
   "retrieve" should {
     "filter users by first name" in {
-      val filter = "firstName eq 'Jonas'"
+      val filter = Some("firstName eq 'Jonas'")
       val response = userController.retrieve(filter, None, None)(adminRequest)
       val responseBody = contentAsJson(response)
 
@@ -64,7 +64,7 @@ class UserFunctionalSpec extends BaseSpec {
       }
     }
     "filter users by last name" in {
-      val filter = "lastName gt 'Doppler'"
+      val filter = Some("lastName gt 'Doppler'")
       val response = userController.retrieve(filter, None, None)(adminRequest)
       val responseBody = contentAsJson(response)
 
@@ -75,7 +75,7 @@ class UserFunctionalSpec extends BaseSpec {
     }
 
     "skip offset results" in {
-      val filter = "lastName gt 'Doppler'"
+      val filter = Some("lastName gt 'Doppler'")
       val limit = None
       val offset = Some(1)
       val response = userController.retrieve(filter, limit, offset)(adminRequest)
@@ -89,7 +89,7 @@ class UserFunctionalSpec extends BaseSpec {
     }
 
     "limit results" in {
-      val filter = "lastName gt 'Doppler'"
+      val filter = Some("lastName gt 'Doppler'")
       val limit = Some(2)
       val offset = Some(1)
 
@@ -144,6 +144,29 @@ class UserFunctionalSpec extends BaseSpec {
 
       val result = execute(userDao.users.filter(_.id === mikkel.id))
       result.head.roles must not contain Admin
+    }
+  }
+
+  "updatePassword" should {
+    "change a user's password" in {
+      val request =
+        FakeRequest()
+          .withHeaders(hannahAuthHeader)
+          .withBody(ChangePasswordDto("myNewSecretPwd"))
+
+      val response = userController.updatePassword()(request)
+
+      status(response) mustEqual NO_CONTENT
+
+      val newRequest =
+        FakeRequest()
+          .withHeaders(buildBasicAuthHeader(hannah.email, "myNewSecretPwd"))
+
+      val newResponse =
+        userController
+          .retrieve(Some("firstName eq 'Hannah'"), None, None)(newRequest)
+
+      status(newResponse) mustEqual OK
     }
   }
 

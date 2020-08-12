@@ -113,7 +113,7 @@ class RecordFunctionalSpec extends BaseSpec {
   "retrieve" should {
     "filter records by duration" in {
       val request = FakeRequest().withHeaders(Fixture.hannahAuthHeader)
-      val filter = "duration eq 'PT40M' and distance ne 5000"
+      val filter = Some("duration eq 'PT40M' and distance ne 5000")
       val limit = None
       val offset = None
 
@@ -128,9 +128,9 @@ class RecordFunctionalSpec extends BaseSpec {
     }
     "filter complex query" in {
       val request = FakeRequest().withHeaders(Fixture.hannahAuthHeader)
-      val filter =
+      val filter = Some(
         "((duration lt 'PT40M' or distance lt 5000) and date ne '2020-08-08T00:00:00Z') and " +
-          "date lt '2020-08-08T00:00:00Z' and (duration ne 'PT25M' and lon gt 10.1)"
+          "date lt '2020-08-08T00:00:00Z' and (duration ne 'PT25M' and lon gt 10.1)")
       val limit = None
       val offset = None
 
@@ -146,7 +146,7 @@ class RecordFunctionalSpec extends BaseSpec {
     }
     "skip offset results" in {
       val request = FakeRequest().withHeaders(Fixture.hannahAuthHeader)
-      val filter = "duration eq 'PT40M' and distance ne 5000"
+      val filter = Some("duration eq 'PT40M' and distance ne 5000")
       val limit = None
       val offset = Some(1)
 
@@ -158,7 +158,7 @@ class RecordFunctionalSpec extends BaseSpec {
     }
     "limit results" in {
       val request = FakeRequest().withHeaders(Fixture.hannahAuthHeader)
-      val filter = "duration eq 'PT40M' and distance ne 5000"
+      val filter = Some("duration eq 'PT40M' and distance ne 5000")
       val limit = Some(1)
       val offset = None
 
@@ -173,7 +173,8 @@ class RecordFunctionalSpec extends BaseSpec {
     }
     "allow admin to retrieve other users' records" in {
       val request = FakeRequest().withHeaders(Fixture.adminAuthHeader)
-      val filter = "duration eq 'PT40M' and (distance ne 5000 and lat lt 50)"
+      val filter =
+        Some("duration eq 'PT40M' and (distance ne 5000 and lat lt 50)")
       val limit = None
       val offset = None
 
@@ -186,6 +187,51 @@ class RecordFunctionalSpec extends BaseSpec {
         (result \ "distance").as[Int] must (not equal 500)
         (result \ "location" \ "lat").as[Double] must be < 50.0
       }
+    }
+  }
+
+  "retrieveReport" should {
+    "filter records by user" in {
+      val request = FakeRequest().withHeaders(Fixture.hannahAuthHeader)
+      val filter = None
+      val limit = Some(1)
+      val offset = None
+
+      val response = recordController.retrieveReport(None, filter, limit, offset)(request)
+      val json = contentAsJson(response)
+
+      (json \ "count").as[Int] mustEqual 1
+      val report = (json \ "results").as[Seq[JsObject]].head
+      (report \ "weekOfYear").as[Int] mustEqual 32
+      (report \ "averageSpeed").as[Double] must (be > 2.97 and be < 2.98)
+      (report \ "total").as[Int] mustEqual 31500
+    }
+    "filter records by average speed" in {
+      val request = Fixture.adminRequest
+      val filter = Some("avgSpeed gt 3.0 and avgSpeed lt 5 and avgSpeed ne 2.5 or avgSpeed eq 2.12")
+      val limit = None
+      val offset = None
+
+      val response = recordController.retrieveReport(None, filter, limit, offset)(request)
+      val json = contentAsJson(response)
+
+      (json \ "count").as[Int] mustEqual 2
+      (json \ "results").as[Seq[JsObject]].foreach { report =>
+        (report \ "averageSpeed").as[Double] must (be > 3.0 and be < 5.0 and not equal 2.5)
+      }
+    }
+    "filter records by total distance" in {
+      val request = Fixture.adminRequest
+      val filter = Some("distance gt 32000 and distance lt 40000 and distance ne 32120 or distance eq 0")
+      val limit = None
+      val offset = None
+
+      val response = recordController.retrieveReport(None, filter, limit, offset)(request)
+      val json = contentAsJson(response)
+
+      (json \ "count").as[Int] mustEqual 1
+      val report = (json \ "results").as[Seq[JsObject]].head
+      (report \ "total").as[Int] must (be > 32000 and be < 40000 and not equal 32120)
     }
   }
 

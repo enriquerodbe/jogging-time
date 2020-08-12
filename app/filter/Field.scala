@@ -11,6 +11,10 @@ trait StringField extends Field[String] {
   override def parseValue(value: String): String = value
 }
 
+trait IntField extends Field[Int] {
+  override def parseValue(value: String): Int = value.toInt
+}
+
 trait InstantField extends Field[Instant] {
   override def parseValue(value: String): Instant = Instant.parse(value)
 }

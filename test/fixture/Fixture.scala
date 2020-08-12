@@ -8,6 +8,7 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.{Duration, Instant}
 import javax.inject.Inject
 import play.api.db.slick.DatabaseConfigProvider
+import play.api.mvc.Headers
 import play.api.test.FakeRequest
 import record.RecordsTable
 import report.AverageReportsTable
@@ -80,10 +81,12 @@ object Fixture {
     Password(helge.email, hasher, hash, None),
   )
 
-  val adminAuthHeader =
-    "Authorization" -> s"Basic ${Base64.encode(s"${admin.email}:test")}"
-  val hannahAuthHeader =
-    "Authorization" -> s"Basic ${Base64.encode(s"${hannah.email}:test")}"
+  def buildBasicAuthHeader(email: String, pass: String): Headers = {
+    Headers("Authorization" -> s"Basic ${Base64.encode(s"$email:$pass")}")
+  }
+
+  val adminAuthHeader = buildBasicAuthHeader(admin.email, "test")
+  val hannahAuthHeader = buildBasicAuthHeader(hannah.email, "test")
 
   val adminRequest = FakeRequest().withHeaders(adminAuthHeader)
 }

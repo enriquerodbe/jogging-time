@@ -1,7 +1,7 @@
 package parser
 
 import domain.UserField.{Email, FirstName, LastName}
-import filter._
+import filter.FilterExpression._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should
 

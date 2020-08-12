@@ -1,7 +1,7 @@
 package parser
 
 import domain.RecordField.{Date, Distance, Duration, LocationLat, LocationLon}
-import filter.{Eq, Gt, Lt, Ne}
+import filter.FilterExpression.{Eq, Gt, Lt, Ne}
 import java.time
 import java.time.Instant
 import org.scalatest.flatspec.AnyFlatSpec

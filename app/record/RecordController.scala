@@ -8,7 +8,7 @@ import domain._
 import filter.FilterOptions
 import java.time.Duration
 import javax.inject.{Inject, Singleton}
-import parser.RecordFilterQueryParser
+import parser.{RecordFilterQueryParser, WeekReportFilterQueryParser}
 import play.api.libs.json._
 import play.api.mvc.{BaseController, ControllerComponents}
 import scala.concurrent.{ExecutionContext, Future}
@@ -18,7 +18,8 @@ class RecordController @Inject()(
     val controllerComponents: ControllerComponents,
     silhouette: Silhouette[AuthEnv],
     recordService: RecordService,
-    filterQueryParser: RecordFilterQueryParser)(
+    filterQueryParser: RecordFilterQueryParser,
+    weekReportFilterQueryParser: WeekReportFilterQueryParser)(
     implicit ec: ExecutionContext) extends BaseController {
 
   implicit val distanceReads = Reads {
@@ -26,7 +27,7 @@ class RecordController @Inject()(
     case other => JsError(s"Incorrect distance $other")
   }
   implicit val durationReads = Reads {
-    case JsNumber(value) => JsSuccess(Duration.ofSeconds(value.toLongExact))
+    case JsString(value) => JsSuccess(Duration.parse(value))
     case other => JsError(s"Incorrect duration $other")
   }
   implicit val distanceWrites = Writes[Distance](d => JsNumber(d.value))
@@ -35,6 +36,9 @@ class RecordController @Inject()(
   implicit val weatherConditionsWrites = Json.writes[WeatherConditions]
   implicit val recordWrites = Json.writes[Record]
   implicit val pageWrites = Json.writes[Page[Record]]
+  implicit val speedWrites = Writes[Speed](speed => JsNumber(speed.value))
+  implicit val weekReportWrites = Json.writes[WeekReport]
+  implicit val weekReportPageWrites = Json.writes[Page[WeekReport]]
 
   def create() = {
     silhouette.SecuredAction.async(parse.json[RecordDto]) { request =>
@@ -44,16 +48,31 @@ class RecordController @Inject()(
     }
   }
 
-  def retrieve(filter: String, limit: Option[Int], offset: Option[Int]) = {
-    silhouette.SecuredAction.async { request =>
-      val loggedUser = request.identity
-      val maybeUserId = Option.unless(loggedUser.is(Admin))(loggedUser.id)
-      for {
-        filterExpression <- Future.fromTry(filterQueryParser.parse(filter))
-        filterOptions = FilterOptions(filterExpression, limit, offset)
-        result <- recordService.retrieve(maybeUserId, filterOptions)
-      } yield Ok(Json.toJson(result))
-    }
+  def retrieve(
+      filter: Option[String],
+      limit: Option[Int],
+      offset: Option[Int]) = silhouette.SecuredAction.async { request =>
+    val loggedUser = request.identity
+    val maybeUserId = Option.unless(loggedUser.is(Admin))(loggedUser.id)
+    for {
+      filterExpression <- Future.fromTry(filterQueryParser.parse(filter))
+      filterOptions = FilterOptions(filterExpression, limit, offset)
+      result <- recordService.retrieve(maybeUserId, filterOptions)
+    } yield Ok(Json.toJson(result))
+  }
+
+  def retrieveReport(
+      userId: Option[Long],
+      filter: Option[String],
+      limit: Option[Int],
+      offset: Option[Int]) = silhouette.SecuredAction.async { request =>
+    val loggedUser = request.identity
+    val maybeUserId = if (loggedUser.is(Admin)) userId else Some(loggedUser.id)
+    for {
+      filterExpression <- Future.fromTry(weekReportFilterQueryParser.parse(filter))
+      filterOptions = FilterOptions(filterExpression, limit, offset)
+      result <- recordService.retrieveReport(maybeUserId, filterOptions)
+    } yield Ok(Json.toJson(result))
   }
 
   def update(recordId: Long) = {
@@ -76,8 +95,7 @@ class RecordController @Inject()(
 
   private def getRecordOwnerId(request: SecuredRequest[AuthEnv, RecordDto]) = {
     val loggedUser = request.identity
-    val maybeUserId =
-      if (loggedUser.is(Admin)) request.body.maybeUserId else None
+    val maybeUserId = if (loggedUser.is(Admin)) request.body.userId else None
     maybeUserId.getOrElse(loggedUser.id)
   }
 }

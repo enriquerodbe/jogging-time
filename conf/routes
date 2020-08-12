@@ -1,13 +1,15 @@
 POST   /users           user.UserController.create()
-GET    /users           user.UserController.retrieve(filter: String, limit: Option[Int], offset: Option[Int])
+GET    /users           user.UserController.retrieve(filter: Option[String], limit: Option[Int], offset: Option[Int])
 PUT    /users/:id       user.UserController.update(id: Long)
 PUT    /users/:id/roles user.UserController.updateRoles(id: Long)
+PATCH  /users/password  user.UserController.updatePassword()
 DELETE /users/:id       user.UserController.delete(id: Long)
 
 POST   /records           record.RecordController.create()
-GET    /records           record.RecordController.retrieve(filter: String, limit: Option[Int], offset: Option[Int])
+GET    /records           record.RecordController.retrieve(filter: Option[String], limit: Option[Int], offset: Option[Int])
+GET    /records/report    record.RecordController.retrieveReport(userId: Option[Long], filter: Option[String], limit: Option[Int], offset: Option[Int])
 PUT    /records/:recordId record.RecordController.update(recordId: Long)
 DELETE /records/:recordId record.RecordController.delete(recordId: Long)
 
 POST    /reports          report.AverageReportController.create(days: Int)
-GET     /reports          report.AverageReportController.retrieve(filter: String, userId: Option[Long], limit: Option[Int], offset: Option[Int])
+GET     /reports          report.AverageReportController.retrieve(filter: Option[String], userId: Option[Long], limit: Option[Int], offset: Option[Int])

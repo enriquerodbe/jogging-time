@@ -1,5 +1,6 @@
 package parser
 
+import filter.FilterExpression._
 import filter._
 import scala.util.Try
 import scala.util.parsing.combinator.RegexParsers
@@ -34,8 +35,12 @@ trait BaseParser extends RegexParsers {
   def parse(input: String): Try[FilterExpression] = {
     parseAll(expr, input) match {
       case Success(filterExpression, _) => scala.util.Success(filterExpression)
-      case Failure(msg, _) => scala.util.Failure(new Exception(msg))
-      case Error(msg, _) => scala.util.Failure(new Exception(msg))
+      case Failure(msg, _) => scala.util.Failure(ParseException(msg))
+      case Error(msg, _) => scala.util.Failure(ParseException(msg))
     }
+  }
+
+  def parse(input: Option[String]): Try[FilterExpression] = {
+    input.map(parse).getOrElse(util.Success(Empty))
   }
 }

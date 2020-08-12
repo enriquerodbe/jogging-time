@@ -1,6 +1,6 @@
 package record
 
-import domain.{AverageReport, Page, Record}
+import domain.{AverageReport, Page, Record, WeekReport}
 import filter.FilterOptions
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
@@ -41,6 +41,17 @@ private[record] class RecordServiceImpl @Inject()(
     val query = for {
       results <- recordDao.retrieve(maybeUserId, filter)
       total <- recordDao.count(maybeUserId, filter)
+    } yield Page(results, total, results.size, filter.offset)
+
+    db.run(query)
+  }
+
+  override def retrieveReport(
+      userId: Option[Long],
+      filter: FilterOptions): Future[Page[WeekReport]] = {
+    val query = for {
+      results <- recordDao.retrieveReport(userId, filter)
+      total <- recordDao.countReport(userId, filter)
     } yield Page(results, total, results.size, filter.offset)
 
     db.run(query)

@@ -1,7 +1,8 @@
 package filter
 
-import domain.{Distance, Speed, UserRole}
 import domain.UserRole.UserRole
+import domain.{Distance, Speed, UserRole}
+import filter.FilterExpression._
 import java.time.{Duration, Instant}
 import play.api.db.slick.HasDatabaseConfigProvider
 import slick.jdbc.JdbcProfile
@@ -25,6 +26,8 @@ trait FilterDao extends HasDatabaseConfigProvider[JdbcProfile] {
   protected def buildCondition(
       filter: FilterExpression,
       table: FilterTable): Rep[Boolean] = filter match {
+    case Empty =>
+      true
     case And(e1, e2) =>
       buildCondition(e1, table) && buildCondition(e2, table)
     case Or(e1, e2) =>

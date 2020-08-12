@@ -1,7 +1,7 @@
 package record
 
 import com.google.inject.ImplementedBy
-import domain.{AverageReport, Page, Record}
+import domain.{AverageReport, Page, Record, WeekReport}
 import filter.FilterOptions
 import scala.concurrent.Future
 
@@ -17,6 +17,10 @@ trait RecordService {
   def retrieveAverages(
       userIds: Seq[Long],
       days: Int): Future[Seq[AverageReport]]
+
+  def retrieveReport(
+      userId: Option[Long],
+      filter: FilterOptions): Future[Page[WeekReport]]
 
   def update(updatedRecord: Record): Future[Unit]
 

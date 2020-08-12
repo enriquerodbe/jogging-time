@@ -7,7 +7,7 @@ case class AverageReport(
     id: Long,
     userId: Long,
     averageSpeed: Speed,
-    averageDistance: Distance,
+    totalDistance: Distance,
     date: Instant,
 )
 

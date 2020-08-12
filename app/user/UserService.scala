@@ -4,8 +4,8 @@ import com.google.inject.ImplementedBy
 import com.mohiva.play.silhouette.api.services.IdentityService
 import domain.UserRole.UserRole
 import domain.{Page, User}
-import scala.concurrent.Future
 import filter.FilterOptions
+import scala.concurrent.Future
 
 @ImplementedBy(classOf[UserServiceImpl])
 trait UserService extends IdentityService[User] {
@@ -20,6 +20,8 @@ trait UserService extends IdentityService[User] {
       userId: Long,
       add: Set[UserRole],
       remove: Set[UserRole]): Future[Unit]
+
+  def updatePassword(id: Long, password: String): Future[Unit]
 
   def delete(id: Long): Future[Unit]
 }

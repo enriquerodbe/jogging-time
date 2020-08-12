@@ -45,7 +45,19 @@ class PasswordDao @Inject()(
 
   override def update(
       loginInfo: LoginInfo,
-      authInfo: PasswordInfo): Future[PasswordInfo] = ???
+      authInfo: PasswordInfo): Future[PasswordInfo] = {
+    db.run(updateAction(loginInfo, authInfo))
+  }
+
+  def updateAction(
+      loginInfo: LoginInfo,
+      authInfo: PasswordInfo): DBIO[PasswordInfo] = {
+    passwords
+      .filter(_.userEmail === loginInfo.providerKey)
+      .map(p => (p.hasher, p.hash, p.salt))
+      .update((authInfo.hasher, authInfo.password, authInfo.salt))
+      .map(_ => authInfo)
+  }
 
   override def save(
       loginInfo: LoginInfo,

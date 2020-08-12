@@ -33,9 +33,8 @@ class AverageReportFunctionalSpec extends BaseSpec {
       val avgSpeed = speedsSum / mikkelRecords.size
       mikkelReports.head.averageSpeed mustEqual Speed(avgSpeed)
 
-      val distancesSum = mikkelRecords.map(_.distance.value).sum
-      val avgDistance = distancesSum / mikkelRecords.size
-      mikkelReports.head.averageDistance mustEqual Distance(avgDistance)
+      val totalDistance = mikkelRecords.map(_.distance.value).sum
+      mikkelReports.head.totalDistance mustEqual Distance(totalDistance)
     }
     "not create reports again" in {
       val response = averageReportController.create(5)(Fixture.adminRequest)
@@ -51,7 +50,7 @@ class AverageReportFunctionalSpec extends BaseSpec {
 
   "retrieve" should {
     "filter reports by average distance" in {
-      val filter = "avgDistance eq 5000"
+      val filter = Some("avgDistance eq 5000")
       val userId = None
       val limit = None
       val offset = None
@@ -64,11 +63,11 @@ class AverageReportFunctionalSpec extends BaseSpec {
 
       (json \ "count").as[Int] mustEqual 1
       (json \ "results").as[Seq[JsObject]].foreach { result =>
-        (result \ "averageDistance").as[Double] mustEqual 5000.0
+        (result \ "totalDistance").as[Double] mustEqual 5000.0
       }
     }
     "limit results to user" in {
-      val filter = "avgDistance eq 5000"
+      val filter = Some("avgDistance eq 5000")
       val userId = None
       val limit = None
       val offset = None
@@ -83,7 +82,7 @@ class AverageReportFunctionalSpec extends BaseSpec {
       (json \ "count").as[Int] mustEqual 0
     }
     "skipp offset results" in {
-      val filter = "date gt '2020-07-10T00:00:00Z'"
+      val filter = Some("date gt '2020-07-10T00:00:00Z'")
       val userId = None
       val limit = None
       val offset = Some(2)
@@ -100,7 +99,7 @@ class AverageReportFunctionalSpec extends BaseSpec {
       }
     }
     "limit results" in {
-      val filter = "avgSpeed gt 2.0"
+      val filter = Some("avgSpeed gt 2.0")
       val userId = None
       val limit = Some(1)
       val offset = None

@@ -4,7 +4,7 @@ import domain.{Distance, Location, Record}
 import java.time.{Duration, Instant}
 
 case class RecordDto(
-    maybeUserId: Option[Long],
+    userId: Option[Long],
     date: Instant,
     distance: Distance,
     duration: Duration,
@@ -12,7 +12,7 @@ case class RecordDto(
 ) {
   def record: Record = {
     Record(
-      -1, maybeUserId.getOrElse(-1), date, distance, duration, location, None
+      -1, userId.getOrElse(-1), date, distance, duration, location, None
     )
   }
 }

@@ -5,7 +5,8 @@ import com.mohiva.play.silhouette.api.util.PasswordHasher
 import com.mohiva.play.silhouette.impl.providers.BasicAuthProvider
 import domain.UserRole.UserRole
 import domain.{Page, User, UserField}
-import filter.{Eq, FilterOptions}
+import filter.FilterOptions
+import filter.FilterExpression.Eq
 import javax.inject.{Inject, Singleton}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import scala.concurrent.{ExecutionContext, Future}
@@ -55,6 +56,17 @@ private[user] class UserServiceImpl @Inject()(
     val query = for {
       user <- userDao.retrieve(userId)
       _ <- userDao.updateRoles(user.id, user.roles ++ add -- remove)
+    } yield ()
+
+    db.run(query.transactionally)
+  }
+
+  override def updatePassword(id: Long, password: String): Future[Unit] = {
+    val query = for {
+      user <- userDao.retrieve(id)
+      loginInfo = LoginInfo(BasicAuthProvider.ID, user.email)
+      hashedPassword = passwordHasher.hash(password)
+      _ <- passwordDao.updateAction(loginInfo, hashedPassword)
     } yield ()
 
     db.run(query.transactionally)

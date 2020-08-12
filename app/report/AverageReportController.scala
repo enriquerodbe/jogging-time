@@ -2,8 +2,8 @@ package report
 
 import auth.{AuthEnv, Is}
 import com.mohiva.play.silhouette.api.Silhouette
-import domain.{AverageReport, Distance, Page, Speed}
 import domain.UserRole.Admin
+import domain._
 import filter.FilterOptions
 import javax.inject.{Inject, Singleton}
 import parser.AverageReportFilterQueryParser
@@ -33,7 +33,7 @@ class AverageReportController @Inject()(
   }
 
   def retrieve(
-      filter: String,
+      filter: Option[String],
       maybeUserId: Option[Long],
       limit: Option[Int],
       offset: Option[Int]) = silhouette.SecuredAction.async { request =>
@@ -45,4 +45,6 @@ class AverageReportController @Inject()(
       result <- averageReportsService.retrieve(userId, filterOptions)
     } yield Ok(Json.toJson(result))
   }
+
+
 }
