@@ -3,6 +3,7 @@ package domain
 import filter.{DistanceField, Field, SpeedField}
 
 case class WeekReport(
+    year: Int,
     weekOfYear: Int,
     averageSpeed: Option[Speed],
     total: Option[Distance])
@@ -10,10 +11,11 @@ case class WeekReport(
 object WeekReport {
 
   def fromRow(
+      year: Int,
       weekOfYear: Int,
       averageSpeed: Option[Double],
       totalDistance: Option[Distance]) = {
-    WeekReport(weekOfYear, averageSpeed.map(Speed), totalDistance)
+    WeekReport(year, weekOfYear, averageSpeed.map(Speed), totalDistance)
   }
 }
 

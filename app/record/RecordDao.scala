@@ -17,35 +17,40 @@ class RecordDao @Inject()(
   import profile.api._
 
   private val week = SimpleFunction.unary[Instant, Int]("week")
+  private val year = SimpleFunction.unary[Instant, Int]("year")
   private val div = SimpleBinaryOperator[Double]("/")
 
   def create(record: Record): DBIO[Record] = recordsInsert += record
 
   def retrieve(
-      maybeUserId: Option[Long],
+      userId: Option[Long],
       filter: FilterOptions): DBIO[Seq[Record]] = {
-    records
-      .filterOpt(maybeUserId)(_.userId === _)
-      .filter(buildCondition(filter.condition, _))
+    retrieveQuery(userId, filter)
       .drop(filter.offset)
       .take(filter.limit)
       .result
   }
 
-  def count(userId: Option[Long], filter: FilterOptions): DBIO[Int] = {
+  private def retrieveQuery(userId: Option[Long], filter: FilterOptions) = {
     records
       .filterOpt(userId)(_.userId === _)
       .filter(buildCondition(filter.condition, _))
+  }
+
+  def count(userId: Option[Long], filter: FilterOptions): DBIO[Int] = {
+    retrieveQuery(userId, filter)
       .length
       .result
   }
 
-  def retrieveReport(userId: Option[Long], filter: FilterOptions) = {
+  def retrieveReport(
+      userId: Option[Long],
+      filter: FilterOptions): DBIO[Seq[WeekReport]] = {
     retrieveReportQuery(userId, filter)
       .drop(filter.offset)
       .take(filter.limit)
       .result
-      .map(_.map(t => WeekReport.fromRow(t._1, t._2, t._3)))
+      .map(_.map((WeekReport.fromRow _).tupled))
   }
 
   private def retrieveReportQuery(
@@ -53,29 +58,30 @@ class RecordDao @Inject()(
       filter: FilterOptions) = {
     records
       .filterOpt(userId)(_.userId === _)
-      .groupBy(r => week(r.date))
-      .map { case (week, weekRecords) =>
+      .groupBy(r => (year(r.date), week(r.date)))
+      .map { case ((year, week), weekRecords) =>
         val speeds =
           weekRecords.map(r => div(r.distance.asColumnOf[Double], r.duration))
         val distances = weekRecords.map(_.distance)
-        (week, speeds.avg, distances.sum)
+        (year, week, speeds.avg, distances.sum)
       }
-      .filter((buildReportCondition(filter.condition) _).tupled)
+      .filter { case (_, _, avgSpeed, distance) =>
+        buildReportCondition(filter.condition, avgSpeed, distance)
+      }
   }
 
   private def buildReportCondition(
-      filter: FilterExpression)(
-      week: Rep[Int],
+      filter: FilterExpression,
       avgSpeed: Rep[Option[Double]],
       distance: Rep[Option[Distance]]): Rep[Option[Boolean]] = filter match {
     case Empty =>
       Some(true)
     case And(e1, e2) =>
-      buildReportCondition(e1)(week, avgSpeed, distance) &&
-        buildReportCondition(e2)(week, avgSpeed, distance)
+      buildReportCondition(e1, avgSpeed, distance) &&
+        buildReportCondition(e2, avgSpeed, distance)
     case Or(e1, e2) =>
-      buildReportCondition(e1)(week, avgSpeed, distance) ||
-        buildReportCondition(e2)(week, avgSpeed, distance)
+      buildReportCondition(e1, avgSpeed, distance) ||
+        buildReportCondition(e2, avgSpeed, distance)
     case Eq(AverageSpeed, Speed(value)) => avgSpeed  === value
     case Eq(TotalDistance, value: Distance) => distance === value
     case Ne(AverageSpeed, Speed(value)) => avgSpeed =!= value
