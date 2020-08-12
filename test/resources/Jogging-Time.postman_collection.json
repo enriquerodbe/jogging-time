@@ -1,0 +1,1683 @@
+{
+	"info": {
+		"_postman_id": "4307696a-e019-4307-a45f-f5ed2a310037",
+		"name": "Jogging-Time",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "admin change password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "19cd0526-75c1-4a27-ab0e-be8cb2e94250",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "test",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin@jogging.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Csrf-token",
+								"value": "nocheck",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"password\": \"IamAdam33\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "filter by first name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "07c7a26d-fa03-497e-99d0-9883a742eb51",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.count).to.eql(1);",
+									"    pm.expect(jsonData.total).to.eql(1);",
+									"    pm.expect(jsonData.results[0].email).to.eql(\"admin@jogging.com\");",
+									"    pm.expect(jsonData.results[0].roles[0]).to.eql(\"ADMIN\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "IamAdam33",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin@jogging.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users?filter=firstName eq 'Admin'",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "firstName eq 'Admin'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "empty filter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "373a2613-8806-4b1d-bf66-02d0f4db2cf2",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.count).to.eql(1);",
+									"    pm.expect(jsonData.total).to.eql(1);",
+									"    pm.expect(jsonData.results[0].email).to.eql(\"admin@jogging.com\");",
+									"    pm.expect(jsonData.results[0].roles[0]).to.eql(\"ADMIN\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "IamAdam33",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin@jogging.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:9000/users",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "invalid filter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a343e711-d91a-4737-9eea-1f8d78af655e",
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "IamAdam33",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin@jogging.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:9000/users?filter=invalidField eq 3",
+							"host": [
+								"localhost"
+							],
+							"port": "9000",
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "invalidField eq 3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create Hannah",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "229c94c3-1593-4f9d-a2e6-36b6b5570203",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var json = pm.response.json();",
+									"    pm.expect(json.email).to.eql(\"hannah@dark.io\");",
+									"    pm.expect(json.firstName).to.eql(\"Hannah\");",
+									"    pm.expect(json.lastName).to.eql(\"Kahnwald\");",
+									"    pm.expect(json.roles.length).to.eql(0);",
+									"});",
+									"",
+									"pm.globals.set(\"hannahId\", pm.response.json().id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Csrf-token",
+								"value": "nocheck",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"hannah@dark.io\",\n\t\"password\": \"strongPassword\",\n\t\"firstName\": \"Hannah\",\n\t\"lastName\": \"Kahnwald\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create Jonas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5eb0fa79-f286-4401-8be0-70cc33fbf3a9",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var json = pm.response.json();",
+									"    pm.expect(json.email).to.eql(\"jonas@dark.io\");",
+									"    pm.expect(json.firstName).to.eql(\"Jonas\");",
+									"    pm.expect(json.lastName).to.eql(\"Kahnwald\");",
+									"    pm.expect(json.roles.length).to.eql(0);",
+									"});",
+									"",
+									"pm.globals.set(\"jonasId\", pm.response.json().id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Csrf-token",
+								"type": "text",
+								"value": "nocheck"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"jonas@dark.io\",\n\t\"password\": \"weakPassword\",\n\t\"firstName\": \"Jonas\",\n\t\"lastName\": \"Kahnwald\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create Mikkel",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5eb0fa79-f286-4401-8be0-70cc33fbf3a9",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var json = pm.response.json();",
+									"    pm.expect(json.email).to.eql(\"mikkel@dark.io\");",
+									"    pm.expect(json.firstName).to.eql(\"Mikkel\");",
+									"    pm.expect(json.lastName).to.eql(\"Nielsen\");",
+									"    pm.expect(json.roles.length).to.eql(0);",
+									"});",
+									"",
+									"pm.globals.set(\"mikkelId\", pm.response.json().id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Csrf-token",
+								"type": "text",
+								"value": "nocheck"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"mikkel@dark.io\",\n\t\"password\": \"mikkel_dark\",\n\t\"firstName\": \"Mikkel\",\n\t\"lastName\": \"Nielsen\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hannah unauthorized to retrieve",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "257b21d7-2c49-49df-8e5b-523dd5d1c77b",
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "strongPassword",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "hannah@dark.io",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hannah promoted to manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6c49ba59-de7d-404e-a86c-c256ce1dc312",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "IamAdam33",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin@jogging.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Csrf-token",
+								"type": "text",
+								"value": "nocheck"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"add\": [\"MANAGER\"],\n\t\"remove\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/{{hannahId}}/roles",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{hannahId}}",
+								"roles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hannah allowed to update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "213a6ea4-1b72-4cac-85f4-5f42561c2859",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "strongPassword",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "hannah@dark.io",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Csrf-token",
+								"value": "nocheck",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"firstName\": \"Johnny\",\n\t\"lastName\": \"Kahnwald\",\n\t\"email\": \"jonas@dark.io\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/{{jonasId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{jonasId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hannah allowed to retrieve",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "709e5791-790d-4e37-893b-9af14a3292df",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var json = pm.response.json();",
+									"    pm.expect(json.count).to.eql(1);",
+									"    pm.expect(json.total).to.eql(3);",
+									"    pm.expect(json.offset).to.eql(1);",
+									"    pm.expect(json.results.length).to.eql(1);",
+									"    pm.expect(json.results[0].email).to.eql(\"jonas@dark.io\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "strongPassword",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "hannah@dark.io",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users?filter=(lastName gt 'K' or firstName lt 'B') and email ne 'admin@jogging.com'&limit=1&offset=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "(lastName gt 'K' or firstName lt 'B') and email ne 'admin@jogging.com'"
+								},
+								{
+									"key": "limit",
+									"value": "1"
+								},
+								{
+									"key": "offset",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hannah allowed to delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f21c43dd-a503-4e90-8dc3-02c6fd39e521",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "strongPassword",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "hannah@dark.io",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Csrf-token",
+								"value": "nocheck",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{mikkelId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{mikkelId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "records",
+			"item": [
+				{
+					"name": "Jonas creates record 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3c2d60de-b53b-430f-a189-0ab2f371dde6",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var json = pm.response.json();",
+									"    pm.expect(json.date).to.eql(\"2020-08-08T08:12:31Z\");",
+									"    pm.expect(json.distance).to.eql(5890);",
+									"    pm.expect(json.duration).to.eql(\"PT31M\");",
+									"    pm.expect(json.location.lat).to.eql(27.2038);",
+									"    pm.expect(json.location.lon).to.eql(77.5011);",
+									"});",
+									"",
+									"pm.globals.set(\"jonasFirstRecordId\", pm.response.json().id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "weakPassword",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "jonas@dark.io",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Csrf-token",
+								"value": "nocheck",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"date\": \"2020-08-08T08:12:31Z\",\n\t\"distance\": 5890,\n\t\"duration\": \"PT31M\",\n\t\"location\": {\n\t\t\"lat\": 27.2038,\n\t\t\"lon\": 77.5011\n\t}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/records",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"records"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Jonas creates record 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "21a0129a-0a06-499e-bdf3-d86d2091e2e4",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var json = pm.response.json();",
+									"    pm.expect(json.date).to.eql(\"2020-08-08T09:12:12Z\");",
+									"    pm.expect(json.distance).to.eql(5615);",
+									"    pm.expect(json.duration).to.eql(\"PT30M54S\");",
+									"    pm.expect(json.location.lat).to.eql(27.2038);",
+									"    pm.expect(json.location.lon).to.eql(77.5011);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "weakPassword",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "jonas@dark.io",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Csrf-token",
+								"type": "text",
+								"value": "nocheck"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"date\": \"2020-08-08T09:12:12Z\",\n\t\"distance\": 5615,\n\t\"duration\": \"PT30M54S\",\n\t\"location\": {\n\t\t\"lat\": 27.2038,\n\t\t\"lon\": 77.5011\n\t}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/records",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"records"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Jonas creates record 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "906d20c1-32a0-464c-8166-cbd8827d8d96",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var json = pm.response.json();",
+									"    pm.expect(json.date).to.eql(\"2020-08-10T08:40:31Z\");",
+									"    pm.expect(json.distance).to.eql(8901);",
+									"    pm.expect(json.duration).to.eql(\"PT43M15S\");",
+									"    pm.expect(json.location.lat).to.eql(27.3038);",
+									"    pm.expect(json.location.lon).to.eql(77.4011);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "weakPassword",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "jonas@dark.io",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Csrf-token",
+								"type": "text",
+								"value": "nocheck"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"date\": \"2020-08-10T08:40:31Z\",\n\t\"distance\": 8901,\n\t\"duration\": \"PT43M15S\",\n\t\"location\": {\n\t\t\"lat\": 27.3038,\n\t\t\"lon\": 77.4011\n\t}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/records",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"records"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hannah creates record",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7605a07d-1456-4ed7-a788-9ea5f7317839",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var json = pm.response.json();",
+									"    pm.expect(json.date).to.eql(\"2020-08-10T08:40:31Z\");",
+									"    pm.expect(json.distance).to.eql(6500);",
+									"    pm.expect(json.duration).to.eql(\"PT33M55S\");",
+									"    pm.expect(json.location.lat).to.eql(26.3038);",
+									"    pm.expect(json.location.lon).to.eql(75.4011);",
+									"});",
+									"",
+									"pm.globals.set(\"hannahFirstRecordId\", pm.response.json().id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "strongPassword",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "hannah@dark.io",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Csrf-token",
+								"type": "text",
+								"value": "nocheck"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"date\": \"2020-08-10T08:40:31Z\",\n\t\"distance\": 6500,\n\t\"duration\": \"PT33M55S\",\n\t\"location\": {\n\t\t\"lat\": 26.3038,\n\t\t\"lon\": 75.4011\n\t}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/records",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"records"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Admin creates record for Jonas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6275d530-8479-4880-894d-0cdbd9158193",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var json = pm.response.json();",
+									"    pm.expect(json.date).to.eql(\"2020-08-11T08:00:00Z\");",
+									"    pm.expect(json.distance).to.eql(10000);",
+									"    pm.expect(json.duration).to.eql(\"PT50M\");",
+									"    pm.expect(json.location.lat).to.eql(27.0);",
+									"    pm.expect(json.location.lon).to.eql(77.0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "IamAdam33",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin@jogging.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Csrf-token",
+								"type": "text",
+								"value": "nocheck"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"userId\": {{jonasId}},\n\t\"date\": \"2020-08-11T08:00:00Z\",\n\t\"distance\": 10000,\n\t\"duration\": \"PT50M\",\n\t\"location\": {\n\t\t\"lat\": 27.0,\n\t\t\"lon\": 77.0\n\t}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/records",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"records"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Admin retrieves all users records",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7e9eed79-ea05-46cb-b24d-887660efd164",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var json = pm.response.json();",
+									"    pm.expect(json.count).to.eql(5);",
+									"    pm.expect(json.total).to.eql(5);",
+									"    pm.expect(json.offset).to.eql(0);",
+									"    pm.expect(json.results[0].id).to.eql(1);",
+									"    pm.expect(json.results[1].id).to.eql(2);",
+									"    pm.expect(json.results[2].id).to.eql(3);",
+									"    pm.expect(json.results[3].id).to.eql(4);",
+									"    pm.expect(json.results[4].id).to.eql(5);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "IamAdam33",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin@jogging.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/records?filter=date gt '2020-08-03T00:00:00Z' and (distance lt 10000 or duration lt 'PT60M')&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"records"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "date gt '2020-08-03T00:00:00Z' and (distance lt 10000 or duration lt 'PT60M')"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Jonas retrieves owned records",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "55af0c09-75f9-4a02-bad9-4449a2b81c39",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var json = pm.response.json();",
+									"    pm.expect(json.count).to.eql(4);",
+									"    pm.expect(json.total).to.eql(4);",
+									"    pm.expect(json.offset).to.eql(0);",
+									"    pm.expect(json.results[0].id).to.eql(1);",
+									"    pm.expect(json.results[1].id).to.eql(2);",
+									"    pm.expect(json.results[2].id).to.eql(3);",
+									"    pm.expect(json.results[3].id).to.eql(5);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "weakPassword",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "jonas@dark.io",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/records?filter=date gt '2020-08-03T00:00:00Z' and (distance lt 10000 or duration lt 'PT60M')&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"records"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "date gt '2020-08-03T00:00:00Z' and (distance lt 10000 or duration lt 'PT60M')"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Jonas updates own record",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b83dc2c5-9071-4b30-a86b-c82d97dba067",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "weakPassword",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "jonas@dark.io",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Csrf-token",
+								"value": "nocheck",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"date\": \"2020-08-08T08:12:31Z\",\n\t\"distance\": 5909,\n\t\"duration\": \"PT35M\",\n\t\"location\": {\n\t\t\"lat\": 27.2038,\n        \"lon\": 77.5011\n\t}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/records/{{jonasFirstRecordId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"records",
+								"{{jonasFirstRecordId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Admin updates Jonas's record",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "669c694d-27c7-4bb2-beb8-4915a8869eed",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "weakPassword",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "jonas@dark.io",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Csrf-token",
+								"value": "nocheck",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"date\": \"2020-08-08T08:12:31Z\",\n\t\"distance\": 6509,\n\t\"duration\": \"PT35M\",\n\t\"location\": {\n\t\t\"lat\": 27.2038,\n        \"lon\": 77.5011\n\t}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/records/{{jonasFirstRecordId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"records",
+								"{{jonasFirstRecordId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Jonas deletes own record",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "84ca1a1d-5207-42e8-86e7-91068b29987f",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "weakPassword",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "jonas@dark.io",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Csrf-token",
+								"value": "nocheck",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/records/{{jonasFirstRecordId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"records",
+								"{{jonasFirstRecordId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Admin deletes Hannah's record",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "41dae29b-9a34-4829-8520-7156b911645f",
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "IamAdam33",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin@jogging.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Csrf-token",
+								"type": "text",
+								"value": "nocheck"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/records/{{hannahFirstRecordId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"records",
+								"{{hannahFirstRecordId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Admin retrieves all users records",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2d5d4ff6-3562-40ff-bd9d-e42efc5ece81",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var json = pm.response.json();",
+									"    pm.expect(json.count).to.eql(3);",
+									"    pm.expect(json.total).to.eql(3);",
+									"    pm.expect(json.offset).to.eql(0);",
+									"    pm.expect(json.results[0].id).to.eql(2);",
+									"    pm.expect(json.results[1].id).to.eql(3);",
+									"    pm.expect(json.results[2].id).to.eql(5);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "IamAdam33",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin@jogging.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/records?filter=date gt '2020-08-03T00:00:00Z' and (distance lt 10000 or duration lt 'PT60M')&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"records"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "date gt '2020-08-03T00:00:00Z' and (distance lt 10000 or duration lt 'PT60M')"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "reports",
+			"item": [
+				{
+					"name": "Jonas retrieves own report",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "weakPassword",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "jonas@dark.io",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/records/report",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"records",
+								"report"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Admin retrieves all users' report",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "IamAdam33",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin@jogging.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/records/report?filter=avgSpeed gt 3.0&limit=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"records",
+								"report"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "avgSpeed gt 3.0"
+								},
+								{
+									"key": "offset",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "test",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "admin@jogging.com",
+				"type": "string"
+			}
+		]
+	},
+	"protocolProfileBehavior": {}
+}
