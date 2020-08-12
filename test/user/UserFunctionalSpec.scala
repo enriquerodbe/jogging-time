@@ -5,6 +5,7 @@ import domain.UserRole.{Admin, Manager}
 import fixture.BaseSpec
 import fixture.Fixture._
 import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException
+import parser.ParseException
 import play.api.libs.json.JsObject
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -20,7 +21,7 @@ class UserFunctionalSpec extends BaseSpec {
 
   "create" should {
     "create new user" in {
-      val ulrich = UserDto("ulrich@dark.io", "test", "Ulrich", "Nielsen")
+      val ulrich = CreateUserDto("ulrich@dark.io", "test", "Ulrich", "Nielsen")
       val expected =
         User(6, ulrich.email, ulrich.firstName, ulrich.lastName, Set.empty)
 
@@ -44,7 +45,7 @@ class UserFunctionalSpec extends BaseSpec {
     }
 
     "fail on existing email" in {
-      val admin = UserDto("admin@jogging.com", "test", "Admin", "Admin")
+      val admin = CreateUserDto("admin@jogging.com", "test", "Admin", "Admin")
 
       intercept[JdbcSQLIntegrityConstraintViolationException] {
         await(userController.create()(FakeRequest().withBody(admin)))
@@ -102,12 +103,20 @@ class UserFunctionalSpec extends BaseSpec {
         (user \ "lastName").as[String] must be > "Doppler"
       }
     }
+
+    "throw ParseException on invalid filter" in {
+      val invalidFilter = Some("some invalid non-parseable filter")
+
+      intercept[ParseException] {
+        await(userController.retrieve(invalidFilter, None, None)(adminRequest))
+      }
+    }
   }
 
   "update" should {
     "update user" in {
       val requestBody =
-        UserDto(mikkel.email, "any", mikkel.firstName, mikkel.lastName)
+        UpdateUserDto(mikkel.email, mikkel.firstName, mikkel.lastName)
       val request = adminRequest.withBody(requestBody)
 
       val response = userController.update(mikkel.id)(request)

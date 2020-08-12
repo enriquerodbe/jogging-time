@@ -1,11 +1,10 @@
 package record
 
-import domain.WeekReportField.{AverageSpeed, TotalDistance, WeekOfYear}
+import domain.WeekReportField.{AverageSpeed, TotalDistance}
 import domain._
-import filter.FilterExpression.{And, Empty, Eq, Gt, Lt, Ne, Or}
+import filter.FilterExpression._
 import filter.{FilterExpression, FilterOptions}
 import java.time.Instant
-import java.time.temporal.ChronoUnit
 import javax.inject.{Inject, Singleton}
 import play.api.db.slick.DatabaseConfigProvider
 import scala.concurrent.ExecutionContext
@@ -39,24 +38,6 @@ class RecordDao @Inject()(
       .filter(buildCondition(filter.condition, _))
       .length
       .result
-  }
-
-  def retrieveAverages(
-      userIds: Seq[Long],
-      days: Int): DBIO[Seq[AverageReport]] = {
-    records
-      .filter { record =>
-        record.date > Instant.now().minus(days.longValue, ChronoUnit.DAYS) &&
-        (record.userId inSet userIds)
-      }
-      .groupBy(_.userId)
-      .map { case (userId, records) =>
-        val speeds = records.map(r => div(r.distance.asColumnOf[Double], r.duration))
-        val distances = records.map(_.distance)
-        (userId, speeds.avg, distances.sum)
-      }
-      .result
-      .map(_.map((AverageReport.fromRow _).tupled))
   }
 
   def retrieveReport(userId: Option[Long], filter: FilterOptions) = {
@@ -95,16 +76,12 @@ class RecordDao @Inject()(
     case Or(e1, e2) =>
       buildReportCondition(e1)(week, avgSpeed, distance) ||
         buildReportCondition(e2)(week, avgSpeed, distance)
-    case Eq(WeekOfYear, value: Int) => week.? === value
     case Eq(AverageSpeed, Speed(value)) => avgSpeed  === value
     case Eq(TotalDistance, value: Distance) => distance === value
-    case Ne(WeekOfYear, value: Int) => week.? =!= value
     case Ne(AverageSpeed, Speed(value)) => avgSpeed =!= value
     case Ne(TotalDistance, value: Distance) => distance =!= value
-    case Gt(WeekOfYear, value: Int) => week.? > value
     case Gt(AverageSpeed, Speed(value)) => avgSpeed > value
     case Gt(TotalDistance, value: Distance) => distance > value
-    case Lt(WeekOfYear, value: Int) => week.? < value
     case Lt(AverageSpeed, Speed(value)) => avgSpeed < value
     case Lt(TotalDistance, value: Distance) => distance < value
     case _ => Some(false)

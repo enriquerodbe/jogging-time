@@ -1,6 +1,6 @@
 package domain
 
-import filter.{DistanceField, Field, IntField, SpeedField}
+import filter.{DistanceField, Field, SpeedField}
 
 case class WeekReport(
     weekOfYear: Int,
@@ -20,7 +20,6 @@ object WeekReport {
 sealed trait WeekReportField[T] extends Field[T]
 
 object WeekReportField {
-  case object WeekOfYear extends IntField with WeekReportField[Int]
   case object AverageSpeed extends SpeedField with WeekReportField[Speed]
   case object TotalDistance extends DistanceField with WeekReportField[Distance]
 }

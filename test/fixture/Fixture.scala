@@ -11,7 +11,6 @@ import play.api.db.slick.DatabaseConfigProvider
 import play.api.mvc.Headers
 import play.api.test.FakeRequest
 import record.RecordsTable
-import report.AverageReportsTable
 import scala.concurrent.ExecutionContext
 import user.UsersTable
 import user.password.PasswordsTable
@@ -21,7 +20,6 @@ class Fixture @Inject()(
     implicit ex: ExecutionContext)
   extends UsersTable
     with RecordsTable
-    with AverageReportsTable
     with PasswordsTable {
 
   import profile.api._

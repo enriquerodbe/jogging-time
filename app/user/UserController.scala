@@ -20,7 +20,8 @@ class UserController @Inject()(
     implicit ec: ExecutionContext) extends BaseController {
 
   implicit val userWrites = Json.writes[User]
-  implicit val userDtoReads = Json.reads[UserDto]
+  implicit val createUserDtoReads = Json.reads[CreateUserDto]
+  implicit val updateUserDtoReads = Json.reads[UpdateUserDto]
   implicit val pageWrites = Json.writes[Page[User]]
   implicit val userRoleReads = Reads.enumNameReads(UserRole)
   implicit val userRoleDtoReads = Json.reads[UserRoleDto]
@@ -32,7 +33,7 @@ class UserController @Inject()(
   private val canPromoteUser =
     silhouette.SecuredAction(Is(Manager) && OnlyModifies(Manager) || Is(Admin))
 
-  def create() = Action.async(parse.json[UserDto]) { request =>
+  def create() = Action.async(parse.json[CreateUserDto]) { request =>
     userService
       .create(request.body.user, request.body.password)
       .map(u => Created(Json.toJson(u)))
@@ -50,7 +51,7 @@ class UserController @Inject()(
   }
 
   def update(id: Long) = {
-    isManagerOrAdmin.async(parse.json[UserDto]) { request =>
+    isManagerOrAdmin.async(parse.json[UpdateUserDto]) { request =>
       userService.update(request.body.user.copy(id = id)).map(_ => NoContent)
     }
   }
