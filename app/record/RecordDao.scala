@@ -1,12 +1,12 @@
 package record
 
-import domain.WeekReportField.{AverageSpeed, TotalDistance}
 import domain._
 import filter.FilterExpression._
 import filter.{FilterExpression, FilterOptions}
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import play.api.db.slick.DatabaseConfigProvider
+import record.WeekReportField.{AverageSpeed, TotalDistance}
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -24,20 +24,20 @@ class RecordDao @Inject()(
 
   def retrieve(
       userId: Option[Long],
-      filter: FilterOptions): DBIO[Seq[Record]] = {
+      filter: FilterOptions[RecordField]): DBIO[Seq[Record]] = {
     retrieveQuery(userId, filter)
       .drop(filter.offset)
       .take(filter.limit)
       .result
   }
 
-  private def retrieveQuery(userId: Option[Long], filter: FilterOptions) = {
+  private def retrieveQuery(userId: Option[Long], filter: FilterOptions[RecordField]) = {
     records
       .filterOpt(userId)(_.userId === _)
-      .filter(buildCondition(filter.condition, _))
+      .filter(buildCondition(filter.condition))
   }
 
-  def count(userId: Option[Long], filter: FilterOptions): DBIO[Int] = {
+  def count(userId: Option[Long], filter: FilterOptions[RecordField]): DBIO[Int] = {
     retrieveQuery(userId, filter)
       .length
       .result
@@ -45,7 +45,7 @@ class RecordDao @Inject()(
 
   def retrieveReport(
       userId: Option[Long],
-      filter: FilterOptions): DBIO[Seq[WeekReport]] = {
+      filter: FilterOptions[WeekReportField]): DBIO[Seq[WeekReport]] = {
     retrieveReportQuery(userId, filter)
       .drop(filter.offset)
       .take(filter.limit)
@@ -55,7 +55,7 @@ class RecordDao @Inject()(
 
   private def retrieveReportQuery(
       userId: Option[Long],
-      filter: FilterOptions) = {
+      filter: FilterOptions[WeekReportField]) = {
     records
       .filterOpt(userId)(_.userId === _)
       .groupBy(r => (year(r.date), week(r.date)))
@@ -71,10 +71,10 @@ class RecordDao @Inject()(
   }
 
   private def buildReportCondition(
-      filter: FilterExpression,
+      filter: FilterExpression[WeekReportField],
       avgSpeed: Rep[Option[Double]],
       distance: Rep[Option[Distance]]): Rep[Option[Boolean]] = filter match {
-    case Empty =>
+    case Empty() =>
       Some(true)
     case And(e1, e2) =>
       buildReportCondition(e1, avgSpeed, distance) &&
@@ -82,18 +82,18 @@ class RecordDao @Inject()(
     case Or(e1, e2) =>
       buildReportCondition(e1, avgSpeed, distance) ||
         buildReportCondition(e2, avgSpeed, distance)
-    case Eq(AverageSpeed, Speed(value)) => avgSpeed  === value
-    case Eq(TotalDistance, value: Distance) => distance === value
-    case Ne(AverageSpeed, Speed(value)) => avgSpeed =!= value
-    case Ne(TotalDistance, value: Distance) => distance =!= value
-    case Gt(AverageSpeed, Speed(value)) => avgSpeed > value
-    case Gt(TotalDistance, value: Distance) => distance > value
-    case Lt(AverageSpeed, Speed(value)) => avgSpeed < value
-    case Lt(TotalDistance, value: Distance) => distance < value
+    case Eq(field, Speed(value)) if field == AverageSpeed => avgSpeed === value
+    case Eq(field, value: Distance) if field == TotalDistance => distance === value
+    case Ne(field, Speed(value)) if field == AverageSpeed => avgSpeed =!= value
+    case Ne(field, value: Distance) if field == TotalDistance => distance =!= value
+    case Gt(field, Speed(value)) if field == AverageSpeed => avgSpeed > value
+    case Gt(field, value: Distance) if field == TotalDistance => distance > value
+    case Lt(field, Speed(value)) if field == AverageSpeed => avgSpeed < value
+    case Lt(field, value: Distance) if field == TotalDistance => distance < value
     case _ => Some(false)
   }
 
-  def countReport(userId: Option[Long], filter: FilterOptions): DBIO[Int] = {
+  def countReport(userId: Option[Long], filter: FilterOptions[WeekReportField]): DBIO[Int] = {
     retrieveReportQuery(userId, filter).length.result
   }
 

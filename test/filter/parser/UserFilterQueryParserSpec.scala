@@ -1,9 +1,10 @@
-package parser
+package filter.parser
 
-import domain.UserField.{Email, FirstName, LastName}
 import filter.FilterExpression._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should
+import user.UserField.{Email, FirstName, LastName}
+import user.UserFilterQueryParser
 
 class UserFilterQueryParserSpec extends AnyFlatSpec with should.Matchers {
 

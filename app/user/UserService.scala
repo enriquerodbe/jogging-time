@@ -12,7 +12,7 @@ trait UserService extends IdentityService[User] {
 
   def create(user: User, plainPassword: String): Future[User]
 
-  def retrieve(filter: FilterOptions): Future[Page[User]]
+  def retrieve(filter: FilterOptions[UserField]): Future[Page[User]]
 
   def update(user: User): Future[Unit]
 

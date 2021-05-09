@@ -6,7 +6,6 @@ import domain.UserRole.{Admin, Manager}
 import domain.{Page, User, UserRole}
 import filter.FilterOptions
 import javax.inject.{Inject, Singleton}
-import parser.UserFilterQueryParser
 import play.api.libs.json.{Json, Reads}
 import play.api.mvc.{BaseController, ControllerComponents}
 import scala.concurrent.{ExecutionContext, Future}

@@ -4,9 +4,9 @@ import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordHasher
 import com.mohiva.play.silhouette.impl.providers.BasicAuthProvider
 import domain.UserRole.UserRole
-import domain.{Page, User, UserField}
-import filter.FilterOptions
+import domain.{Page, User}
 import filter.FilterExpression.Eq
+import filter.FilterOptions
 import javax.inject.{Inject, Singleton}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,7 +36,7 @@ private[user] class UserServiceImpl @Inject()(
     db.run(query.transactionally)
   }
 
-  override def retrieve(filter: FilterOptions): Future[Page[User]] = {
+  override def retrieve(filter: FilterOptions[UserField]): Future[Page[User]] = {
     val query = for {
       total <- userDao.count(filter.condition)
       results <- userDao.retrieve(filter)

@@ -1,7 +1,7 @@
 package error
 
 import javax.inject.Inject
-import parser.ParseException
+import filter.parser.ParseException
 import play.api.http.JsonHttpErrorHandler
 import play.api.http.Status.BAD_REQUEST
 import play.api.mvc.{RequestHeader, Result}

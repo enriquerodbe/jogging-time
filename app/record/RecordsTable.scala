@@ -1,18 +1,22 @@
 package record
 
-import domain.{Distance, Location, Record, RecordField, WeatherConditions}
-import filter.{Field, FilterDao, FilterTable}
+import domain._
+import filter.database.{FilterDao, FilterTable, FilterColumn}
 import java.time.{Duration, Instant}
-import play.api.db.slick.HasDatabaseConfigProvider
-import slick.jdbc.JdbcProfile
 
-trait RecordsTable
-  extends HasDatabaseConfigProvider[JdbcProfile] with FilterDao {
+trait RecordsTable extends FilterDao[RecordField] {
 
   import profile.api._
 
+  implicit val distanceMapper: BaseColumnType[Distance] =
+    MappedColumnType.base[Distance, Int](_.value, Distance)
+  implicit val durationMapper: BaseColumnType[Duration] =
+    MappedColumnType.base[Duration, Long](_.toSeconds, Duration.ofSeconds)
+  implicit val speedMapper: BaseColumnType[Speed] =
+    MappedColumnType.base[Speed, Double](_.value, Speed)
+
   class Records(tag: Tag)
-    extends Table[Record](tag, "records") with FilterTable {
+    extends Table[Record](tag, "records") with FilterTable[RecordField] {
 
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def userId = column[Long]("userId")
@@ -39,15 +43,14 @@ trait RecordsTable
         .<>(Record.tupled, Record.unapply)
     }
 
-    override def getColumn[T](field: Field[T]): Rep[T] = {
-      (field match {
+    override def getFilterColumn[T](field: RecordField[T]): FilterColumn[T] =
+      field match {
         case RecordField.Date => date
         case RecordField.Distance => distance
         case RecordField.Duration => duration
         case RecordField.LocationLat => locationLat
         case RecordField.LocationLon => locationLon
-      }).asInstanceOf[Rep[T]]
-    }
+      }
   }
 
   val records = TableQuery[Records]

@@ -5,7 +5,7 @@ import domain.UserRole.{Admin, Manager}
 import fixture.BaseSpec
 import fixture.Fixture._
 import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException
-import parser.ParseException
+import filter.parser.ParseException
 import play.api.libs.json.JsObject
 import play.api.test.FakeRequest
 import play.api.test.Helpers._

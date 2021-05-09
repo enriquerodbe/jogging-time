@@ -37,7 +37,7 @@ private[record] class RecordServiceImpl @Inject()(
 
   override def retrieve(
       maybeUserId: Option[Long],
-      filter: FilterOptions): Future[Page[Record]] = {
+      filter: FilterOptions[RecordField]): Future[Page[Record]] = {
     val query = for {
       results <- recordDao.retrieve(maybeUserId, filter)
       total <- recordDao.count(maybeUserId, filter)
@@ -48,7 +48,7 @@ private[record] class RecordServiceImpl @Inject()(
 
   override def retrieveReport(
       userId: Option[Long],
-      filter: FilterOptions): Future[Page[WeekReport]] = {
+      filter: FilterOptions[WeekReportField]): Future[Page[WeekReport]] = {
     val query = for {
       results <- recordDao.retrieveReport(userId, filter)
       total <- recordDao.countReport(userId, filter)

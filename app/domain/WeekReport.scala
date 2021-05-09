@@ -1,7 +1,5 @@
 package domain
 
-import filter.{DistanceField, Field, SpeedField}
-
 case class WeekReport(
     year: Int,
     weekOfYear: Int,
@@ -14,14 +12,7 @@ object WeekReport {
       year: Int,
       weekOfYear: Int,
       averageSpeed: Option[Double],
-      totalDistance: Option[Distance]) = {
+      totalDistance: Option[Distance]): WeekReport = {
     WeekReport(year, weekOfYear, averageSpeed.map(Speed), totalDistance)
   }
-}
-
-sealed trait WeekReportField[T] extends Field[T]
-
-object WeekReportField {
-  case object AverageSpeed extends SpeedField with WeekReportField[Speed]
-  case object TotalDistance extends DistanceField with WeekReportField[Distance]
 }

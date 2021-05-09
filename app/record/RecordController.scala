@@ -8,7 +8,6 @@ import domain._
 import filter.FilterOptions
 import java.time.Duration
 import javax.inject.{Inject, Singleton}
-import parser.{RecordFilterQueryParser, WeekReportFilterQueryParser}
 import play.api.libs.json._
 import play.api.mvc.{BaseController, ControllerComponents}
 import scala.concurrent.{ExecutionContext, Future}

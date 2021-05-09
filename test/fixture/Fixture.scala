@@ -3,39 +3,10 @@ package fixture
 import com.mohiva.play.silhouette.api.crypto.Base64
 import domain.UserRole.{Admin, Manager}
 import domain._
-import fixture.Fixture._
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.{Duration, Instant}
-import javax.inject.Inject
-import play.api.db.slick.DatabaseConfigProvider
 import play.api.mvc.Headers
 import play.api.test.FakeRequest
-import record.RecordsTable
-import scala.concurrent.ExecutionContext
-import user.UsersTable
-import user.password.PasswordsTable
-
-class Fixture @Inject()(
-    val dbConfigProvider: DatabaseConfigProvider)(
-    implicit ex: ExecutionContext)
-  extends UsersTable
-    with RecordsTable
-    with PasswordsTable {
-
-  import profile.api._
-
-  def insertUsers(): Unit = {
-    val _ = db.run {
-      for {
-        _ <- usersInsert ++= Seq(hannah, mikkel, jonas, helge)
-        _ <- passwords ++= initialPasswords
-      } yield ()
-    }
-  }
-  def insertRecords(): Unit = {
-    val _ = db.run(recordsInsert ++= initialRecords)
-  }
-}
 
 object Fixture {
 

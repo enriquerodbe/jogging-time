@@ -16,16 +16,16 @@ private[user] class UserDao @Inject()(
 
   def retrieve(id: Long): DBIO[User] = users.filter(_.id === id).result.head
 
-  def retrieve(filter: FilterOptions): DBIO[Seq[User]] = {
+  def retrieve(filter: FilterOptions[UserField]): DBIO[Seq[User]] = {
     users
-      .filter(buildCondition(filter.condition, _))
+      .filter(buildCondition(filter.condition))
       .drop(filter.offset)
       .take(filter.limit)
       .result
   }
 
-  def count(filter: FilterExpression): DBIO[Int] = {
-    users.filter(buildCondition(filter, _)).length.result
+  def count(filter: FilterExpression[UserField]): DBIO[Int] = {
+    users.filter(buildCondition(filter)).length.result
   }
 
   def update(user: User): DBIO[Int] = {

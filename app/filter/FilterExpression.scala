@@ -1,20 +1,20 @@
 package filter
 
-sealed trait FilterExpression
+sealed trait FilterExpression[F[_] <: Field[_]]
 
 object FilterExpression {
-  case object Empty extends FilterExpression
+  case class Empty[F[_] <: Field[_]]() extends FilterExpression[F]
 
-  case class Eq[T](field: Field[T], value: T) extends FilterExpression
-  case class Ne[T](field: Field[T], value: T) extends FilterExpression
-  case class Gt[T](field: Field[T], value: T) extends FilterExpression
-  case class Lt[T](field: Field[T], value: T) extends FilterExpression
+  case class Eq[T, F[_] <: Field[_]](field: F[T], value: T) extends FilterExpression[F]
+  case class Ne[T, F[_] <: Field[_]](field: F[T], value: T) extends FilterExpression[F]
+  case class Gt[T, F[_] <: Field[_]](field: F[T], value: T) extends FilterExpression[F]
+  case class Lt[T, F[_] <: Field[_]](field: F[T], value: T) extends FilterExpression[F]
 
-  case class And(
-      expr1: FilterExpression,
-      expr2: FilterExpression) extends FilterExpression
+  case class And[F[_] <: Field[_]](
+      expr1: FilterExpression[F],
+      expr2: FilterExpression[F]) extends FilterExpression[F]
 
-  case class Or(
-      expr1: FilterExpression,
-      expr2: FilterExpression) extends FilterExpression
+  case class Or[F[_] <: Field[_]](
+      expr1: FilterExpression[F],
+      expr2: FilterExpression[F]) extends FilterExpression[F]
 }

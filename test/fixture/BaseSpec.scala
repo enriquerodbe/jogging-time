@@ -42,7 +42,7 @@ trait BaseSpec
   override def beforeAll(): Unit = {
     Evolutions.cleanupEvolutions(database)
     Evolutions.applyEvolutions(database)
-    instanceOf[Fixture].insertUsers()
-    instanceOf[Fixture].insertRecords()
+    instanceOf[UsersFixture].insertUsers()
+    instanceOf[RecordsFixture].insertRecords()
   }
 }

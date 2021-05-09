@@ -1,11 +1,12 @@
-package parser
+package filter.parser
 
-import domain.RecordField.{Date, Distance, Duration, LocationLat, LocationLon}
-import filter.FilterExpression.{Eq, Gt, Lt, Ne}
+import filter.FilterExpression._
 import java.time
 import java.time.Instant
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should
+import record.RecordField._
+import record.RecordFilterQueryParser
 
 class RecordFilterQueryParserSpec extends AnyFlatSpec with should.Matchers {
 
