@@ -11,12 +11,13 @@ import play.api.mvc.{BaseController, ControllerComponents}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UserController @Inject()(
+class UserController @Inject() (
     val controllerComponents: ControllerComponents,
     silhouette: Silhouette[AuthEnv],
     userService: UserService,
-    filterQueryParser: UserFilterQueryParser)(
-    implicit ec: ExecutionContext) extends BaseController {
+    filterQueryParser: UserFilterQueryParser,
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   implicit val userWrites = Json.writes[User]
   implicit val createUserDtoReads = Json.reads[CreateUserDto]
@@ -38,16 +39,14 @@ class UserController @Inject()(
       .map(u => Created(Json.toJson(u)))
   }
 
-  def retrieve(
-      filter: Option[String],
-      limit: Option[Int],
-      offset: Option[Int]) = isManagerOrAdmin.async {
-    for {
-      filterExpression <- Future.fromTry(filterQueryParser.parse(filter))
-      filterOptions = FilterOptions(filterExpression, limit, offset)
-      result <- userService.retrieve(filterOptions)
-    } yield Ok(Json.toJson(result))
-  }
+  def retrieve(filter: Option[String], limit: Option[Int], offset: Option[Int]) =
+    isManagerOrAdmin.async {
+      for {
+        filterExpression <- Future.fromTry(filterQueryParser.parse(filter))
+        filterOptions = FilterOptions(filterExpression, limit, offset)
+        result <- userService.retrieve(filterOptions)
+      } yield Ok(Json.toJson(result))
+    }
 
   def update(id: Long) = {
     isManagerOrAdmin.async(parse.json[UpdateUserDto]) { request =>
@@ -64,15 +63,15 @@ class UserController @Inject()(
   }
 
   def updatePassword() = {
-    silhouette.SecuredAction.async(parse.json[ChangePasswordDto]) {
-      request =>
-        userService
-          .updatePassword(request.identity.id, request.body.password)
-          .map(_ => NoContent)
+    silhouette.SecuredAction.async(parse.json[ChangePasswordDto]) { request =>
+      userService
+        .updatePassword(request.identity.id, request.body.password)
+        .map(_ => NoContent)
     }
   }
 
   def delete(id: Long) = isManagerOrAdmin.async {
     userService.delete(id).map(_ => NoContent)
   }
+
 }

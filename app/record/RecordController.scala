@@ -13,22 +13,25 @@ import play.api.mvc.{BaseController, ControllerComponents}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RecordController @Inject()(
+class RecordController @Inject() (
     val controllerComponents: ControllerComponents,
     silhouette: Silhouette[AuthEnv],
     recordService: RecordService,
     filterQueryParser: RecordFilterQueryParser,
-    weekReportFilterQueryParser: WeekReportFilterQueryParser)(
-    implicit ec: ExecutionContext) extends BaseController {
+    weekReportFilterQueryParser: WeekReportFilterQueryParser,
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   implicit val distanceReads = Reads {
     case JsNumber(value) => JsSuccess(Distance(value.intValue))
     case other => JsError(s"Incorrect distance $other")
   }
+
   implicit val durationReads = Reads {
     case JsString(value) => JsSuccess(Duration.parse(value))
     case other => JsError(s"Incorrect duration $other")
   }
+
   implicit val distanceWrites = Writes[Distance](d => JsNumber(d.value))
   implicit val locationFormat = Json.format[Location]
   implicit val recordDtoReads = Json.reads[RecordDto]
@@ -47,24 +50,23 @@ class RecordController @Inject()(
     }
   }
 
-  def retrieve(
-      filter: Option[String],
-      limit: Option[Int],
-      offset: Option[Int]) = silhouette.SecuredAction.async { request =>
-    val loggedUser = request.identity
-    val maybeUserId = Option.unless(loggedUser.is(Admin))(loggedUser.id)
-    for {
-      filterExpression <- Future.fromTry(filterQueryParser.parse(filter))
-      filterOptions = FilterOptions(filterExpression, limit, offset)
-      result <- recordService.retrieve(maybeUserId, filterOptions)
-    } yield Ok(Json.toJson(result))
-  }
+  def retrieve(filter: Option[String], limit: Option[Int], offset: Option[Int]) =
+    silhouette.SecuredAction.async { request =>
+      val loggedUser = request.identity
+      val maybeUserId = Option.unless(loggedUser.is(Admin))(loggedUser.id)
+      for {
+        filterExpression <- Future.fromTry(filterQueryParser.parse(filter))
+        filterOptions = FilterOptions(filterExpression, limit, offset)
+        result <- recordService.retrieve(maybeUserId, filterOptions)
+      } yield Ok(Json.toJson(result))
+    }
 
   def retrieveReport(
       userId: Option[Long],
       filter: Option[String],
       limit: Option[Int],
-      offset: Option[Int]) = silhouette.SecuredAction.async { request =>
+      offset: Option[Int],
+  ) = silhouette.SecuredAction.async { request =>
     val loggedUser = request.identity
     val maybeUserId = if (loggedUser.is(Admin)) userId else Some(loggedUser.id)
     for {
@@ -97,4 +99,5 @@ class RecordController @Inject()(
     val maybeUserId = if (loggedUser.is(Admin)) request.body.userId else None
     maybeUserId.getOrElse(loggedUser.id)
   }
+
 }

@@ -14,13 +14,14 @@ import slick.jdbc.JdbcProfile
 import user.password.PasswordDao
 
 @Singleton
-private[user] class UserServiceImpl @Inject()(
+private[user] class UserServiceImpl @Inject() (
     val dbConfigProvider: DatabaseConfigProvider,
     userDao: UserDao,
     passwordHasher: PasswordHasher,
-    passwordDao: PasswordDao)(
-    implicit ec: ExecutionContext)
-  extends UserService with HasDatabaseConfigProvider[JdbcProfile] {
+    passwordDao: PasswordDao,
+)(implicit ec: ExecutionContext)
+    extends UserService
+    with HasDatabaseConfigProvider[JdbcProfile] {
 
   import profile.api._
 
@@ -52,7 +53,8 @@ private[user] class UserServiceImpl @Inject()(
   override def updateRoles(
       userId: Long,
       add: Set[UserRole],
-      remove: Set[UserRole]): Future[Unit] = {
+      remove: Set[UserRole],
+  ): Future[Unit] = {
     val query = for {
       user <- userDao.retrieve(userId)
       _ <- userDao.updateRoles(user.id, user.roles ++ add -- remove)
@@ -86,4 +88,5 @@ private[user] class UserServiceImpl @Inject()(
     val condition = Eq(UserField.Email, loginInfo.providerKey)
     retrieve(FilterOptions(condition)).map(_.results.headOption)
   }
+
 }

@@ -19,12 +19,7 @@ class RecordFunctionalSpec extends BaseSpec {
   "create" should {
     "create record for owner" in {
       val requestBody =
-        RecordDto(
-          None,
-          today,
-          Distance(3500),
-          Duration.ofMinutes(15),
-          Fixture.location)
+        RecordDto(None, today, Distance(3500), Duration.ofMinutes(15), Fixture.location)
 
       val request =
         FakeRequest()
@@ -50,7 +45,8 @@ class RecordFunctionalSpec extends BaseSpec {
           today.minus(6, ChronoUnit.DAYS),
           Distance(3500),
           Duration.ofMinutes(15),
-          Fixture.location)
+          Fixture.location,
+        )
 
       val request =
         FakeRequest()
@@ -75,7 +71,8 @@ class RecordFunctionalSpec extends BaseSpec {
           today,
           Distance(3500),
           Duration.ofMinutes(15),
-          Fixture.location)
+          Fixture.location,
+        )
 
       val request =
         FakeRequest()
@@ -95,7 +92,8 @@ class RecordFunctionalSpec extends BaseSpec {
           today,
           Distance(3500),
           Duration.ofMinutes(15),
-          Fixture.location)
+          Fixture.location,
+        )
 
       val request =
         FakeRequest()
@@ -130,7 +128,8 @@ class RecordFunctionalSpec extends BaseSpec {
       val request = FakeRequest().withHeaders(Fixture.hannahAuthHeader)
       val filter = Some(
         s"((duration lt 'PT40M' or distance lt 5000) and date ne '${today.toString}') and " +
-          s"date lt '${today.toString}' and (duration ne 'PT25M' and lon gt 10.1)")
+          s"date lt '${today.toString}' and (duration ne 'PT25M' and lon gt 10.1)"
+      )
       val limit = None
       val offset = None
 
@@ -222,7 +221,8 @@ class RecordFunctionalSpec extends BaseSpec {
     }
     "filter records by total distance" in {
       val request = Fixture.adminRequest
-      val filter = Some("distance gt 32000 and distance lt 40000 and distance ne 32120 or distance eq 0")
+      val filter =
+        Some("distance gt 32000 and distance lt 40000 and distance ne 32120 or distance eq 0")
       val limit = None
       val offset = None
 
@@ -239,12 +239,7 @@ class RecordFunctionalSpec extends BaseSpec {
     "update record" in {
       val recordId = 1L
       val updatedRecord =
-        RecordDto(
-          None,
-          today,
-          Distance(4990),
-          Duration.ofMinutes(30),
-          Fixture.location)
+        RecordDto(None, today, Distance(4990), Duration.ofMinutes(30), Fixture.location)
       val request =
         FakeRequest()
           .withHeaders(Fixture.hannahAuthHeader)

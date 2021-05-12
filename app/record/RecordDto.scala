@@ -10,9 +10,17 @@ case class RecordDto(
     duration: Duration,
     location: Location,
 ) {
+
   def record: Record = {
     Record(
-      -1, userId.getOrElse(-1), date, distance, duration, location, None
+      -1,
+      userId.getOrElse(-1),
+      date,
+      distance,
+      duration,
+      location,
+      None,
     )
   }
+
 }

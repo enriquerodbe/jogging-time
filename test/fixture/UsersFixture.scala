@@ -7,10 +7,9 @@ import scala.concurrent.ExecutionContext
 import user.UsersTable
 import user.password.PasswordsTable
 
-class UsersFixture @Inject()(
-    val dbConfigProvider: DatabaseConfigProvider)(
-    implicit ex: ExecutionContext)
-  extends UsersTable
+class UsersFixture @Inject() (val dbConfigProvider: DatabaseConfigProvider)(
+    implicit ex: ExecutionContext
+) extends UsersTable
     with PasswordsTable {
 
   import profile.api._

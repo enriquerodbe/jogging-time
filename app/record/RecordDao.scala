@@ -10,9 +10,9 @@ import record.WeekReportField.{AverageSpeed, TotalDistance}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class RecordDao @Inject()(
-    val dbConfigProvider: DatabaseConfigProvider)(
-    implicit ec: ExecutionContext) extends RecordsTable {
+class RecordDao @Inject() (val dbConfigProvider: DatabaseConfigProvider)(
+    implicit ec: ExecutionContext
+) extends RecordsTable {
 
   import profile.api._
 
@@ -22,9 +22,7 @@ class RecordDao @Inject()(
 
   def create(record: Record): DBIO[Record] = recordsInsert += record
 
-  def retrieve(
-      userId: Option[Long],
-      filter: FilterOptions[RecordField]): DBIO[Seq[Record]] = {
+  def retrieve(userId: Option[Long], filter: FilterOptions[RecordField]): DBIO[Seq[Record]] = {
     retrieveQuery(userId, filter)
       .drop(filter.offset)
       .take(filter.limit)
@@ -38,14 +36,13 @@ class RecordDao @Inject()(
   }
 
   def count(userId: Option[Long], filter: FilterOptions[RecordField]): DBIO[Int] = {
-    retrieveQuery(userId, filter)
-      .length
-      .result
+    retrieveQuery(userId, filter).length.result
   }
 
   def retrieveReport(
       userId: Option[Long],
-      filter: FilterOptions[WeekReportField]): DBIO[Seq[WeekReport]] = {
+      filter: FilterOptions[WeekReportField],
+  ): DBIO[Seq[WeekReport]] = {
     retrieveReportQuery(userId, filter)
       .drop(filter.offset)
       .take(filter.limit)
@@ -53,9 +50,7 @@ class RecordDao @Inject()(
       .map(_.map((WeekReport.fromRow _).tupled))
   }
 
-  private def retrieveReportQuery(
-      userId: Option[Long],
-      filter: FilterOptions[WeekReportField]) = {
+  private def retrieveReportQuery(userId: Option[Long], filter: FilterOptions[WeekReportField]) = {
     records
       .filterOpt(userId)(_.userId === _)
       .groupBy(r => (year(r.date), week(r.date)))
@@ -73,7 +68,8 @@ class RecordDao @Inject()(
   private def buildReportCondition(
       filter: FilterExpression[WeekReportField],
       avgSpeed: Rep[Option[Double]],
-      distance: Rep[Option[Distance]]): Rep[Option[Boolean]] = filter match {
+      distance: Rep[Option[Distance]],
+  ): Rep[Option[Boolean]] = filter match {
     case Empty() =>
       Some(true)
     case And(e1, e2) =>
@@ -109,4 +105,5 @@ class RecordDao @Inject()(
   def delete(userId: Long, recordId: Long): DBIO[Int] = {
     records.filter(r => r.id === recordId && r.userId === userId).delete
   }
+
 }

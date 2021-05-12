@@ -10,13 +10,14 @@ trait RecordsTable extends FilterDao[RecordField] {
 
   implicit val distanceMapper: BaseColumnType[Distance] =
     MappedColumnType.base[Distance, Int](_.value, Distance)
+
   implicit val durationMapper: BaseColumnType[Duration] =
     MappedColumnType.base[Duration, Long](_.toSeconds, Duration.ofSeconds)
+
   implicit val speedMapper: BaseColumnType[Speed] =
     MappedColumnType.base[Speed, Double](_.value, Speed)
 
-  class Records(tag: Tag)
-    extends Table[Record](tag, "records") with FilterTable[RecordField] {
+  class Records(tag: Tag) extends Table[Record](tag, "records") with FilterTable[RecordField] {
 
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def userId = column[Long]("userId")
@@ -51,10 +52,12 @@ trait RecordsTable extends FilterDao[RecordField] {
         case RecordField.LocationLat => locationLat
         case RecordField.LocationLon => locationLon
       }
+
   }
 
   val records = TableQuery[Records]
 
   val recordsInsert =
     records.returning(records.map(_.id)).into((r, id) => r.copy(id = id))
+
 }

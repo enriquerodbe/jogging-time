@@ -8,16 +8,15 @@ import play.api.mvc.Request
 import scala.concurrent.Future
 import user.UserRoleDto
 
-case class OnlyModifies(role: UserRole)
-  extends Authorization[User, DummyAuthenticator] {
+case class OnlyModifies(role: UserRole) extends Authorization[User, DummyAuthenticator] {
 
-  override def isAuthorized[B](
-      identity: User,
-      authenticator: DummyAuthenticator)(
-      implicit request: Request[B]): Future[Boolean] = {
+  override def isAuthorized[B](identity: User, authenticator: DummyAuthenticator)(
+      implicit request: Request[B]
+  ): Future[Boolean] = {
     val result = request.body match {
       case UserRoleDto(add, remove) => (add ++ remove).forall(_ == role)
     }
     Future.successful(result)
   }
+
 }

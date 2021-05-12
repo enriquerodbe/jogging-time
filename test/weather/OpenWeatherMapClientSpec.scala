@@ -21,25 +21,27 @@ class OpenWeatherMapClientSpec extends BaseSpec {
       .configure("openWeatherMap.baseUrl" -> "")
       .build()
   }
+
   val config = instanceOf[Config]
 
   "OpenWeatherMapClient" should {
     "retrieve weather" in {
       Server.withRouterFromComponents() { components =>
         import components.{defaultActionBuilder => Action}
-        {
-          case GET(p"/data/2.5/onecall/timemachine") =>
-            Action {
-              Ok(Json.obj(
+        { case GET(p"/data/2.5/onecall/timemachine") =>
+          Action {
+            Ok(
+              Json.obj(
                 "current" -> Json.obj(
                   "temp" -> 22.2,
                   "humidity" -> 66,
-                  "wind_speed" -> 18
+                  "wind_speed" -> 18,
                 )
-              ))
-            }
+              )
+            )
+          }
         }
-      }{ implicit port =>
+      } { implicit port =>
         WsTestClient.withClient { wsClient =>
           val weatherClient = new OpenWeatherMapClient(wsClient, config)
           val future = weatherClient.retrieve(Fixture.location, Instant.now)

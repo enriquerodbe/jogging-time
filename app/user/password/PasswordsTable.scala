@@ -4,8 +4,7 @@ import domain.Password
 import play.api.db.slick.HasDatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
-trait PasswordsTable
-  extends HasDatabaseConfigProvider[JdbcProfile] {
+trait PasswordsTable extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import profile.api._
 
@@ -18,6 +17,7 @@ trait PasswordsTable
     def * = {
       (userEmail, hasher, hash, salt).<>(Password.tupled, Password.unapply)
     }
+
   }
 
   val passwords = TableQuery[Passwords]

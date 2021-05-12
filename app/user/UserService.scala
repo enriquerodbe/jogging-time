@@ -16,10 +16,7 @@ trait UserService extends IdentityService[User] {
 
   def update(user: User): Future[Unit]
 
-  def updateRoles(
-      userId: Long,
-      add: Set[UserRole],
-      remove: Set[UserRole]): Future[Unit]
+  def updateRoles(userId: Long, add: Set[UserRole], remove: Set[UserRole]): Future[Unit]
 
   def updatePassword(id: Long, password: String): Future[Unit]
 

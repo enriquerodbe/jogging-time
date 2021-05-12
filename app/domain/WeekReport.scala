@@ -4,7 +4,8 @@ case class WeekReport(
     year: Int,
     weekOfYear: Int,
     averageSpeed: Option[Speed],
-    total: Option[Distance])
+    total: Option[Distance],
+)
 
 object WeekReport {
 
@@ -12,7 +13,9 @@ object WeekReport {
       year: Int,
       weekOfYear: Int,
       averageSpeed: Option[Double],
-      totalDistance: Option[Distance]): WeekReport = {
+      totalDistance: Option[Distance],
+  ): WeekReport = {
     WeekReport(year, weekOfYear, averageSpeed.map(Speed), totalDistance)
   }
+
 }

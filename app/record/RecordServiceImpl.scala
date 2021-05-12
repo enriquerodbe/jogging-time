@@ -10,12 +10,13 @@ import slick.jdbc.JdbcProfile
 import weather.WeatherService
 
 @Singleton
-private[record] class RecordServiceImpl @Inject()(
+private[record] class RecordServiceImpl @Inject() (
     val dbConfigProvider: DatabaseConfigProvider,
     weatherService: WeatherService,
-    recordDao: RecordDao)(
-    implicit ec: ExecutionContext)
-  extends RecordService with HasDatabaseConfigProvider[JdbcProfile] {
+    recordDao: RecordDao,
+)(implicit ec: ExecutionContext)
+    extends RecordService
+    with HasDatabaseConfigProvider[JdbcProfile] {
 
   private lazy val logger = Logger(getClass)
 
@@ -37,7 +38,8 @@ private[record] class RecordServiceImpl @Inject()(
 
   override def retrieve(
       maybeUserId: Option[Long],
-      filter: FilterOptions[RecordField]): Future[Page[Record]] = {
+      filter: FilterOptions[RecordField],
+  ): Future[Page[Record]] = {
     val query = for {
       results <- recordDao.retrieve(maybeUserId, filter)
       total <- recordDao.count(maybeUserId, filter)
@@ -48,7 +50,8 @@ private[record] class RecordServiceImpl @Inject()(
 
   override def retrieveReport(
       userId: Option[Long],
-      filter: FilterOptions[WeekReportField]): Future[Page[WeekReport]] = {
+      filter: FilterOptions[WeekReportField],
+  ): Future[Page[WeekReport]] = {
     val query = for {
       results <- recordDao.retrieveReport(userId, filter)
       total <- recordDao.countReport(userId, filter)
@@ -68,4 +71,5 @@ private[record] class RecordServiceImpl @Inject()(
   override def delete(userId: Long, recordId: Long): Future[Unit] = {
     db.run(recordDao.delete(userId, recordId)).map(_ => ())
   }
+
 }

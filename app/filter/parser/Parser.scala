@@ -7,6 +7,7 @@ trait Parser[T] {
 }
 
 object Parser {
+
   object Instances {
     implicit val stringParser: Parser[String] = identity
     implicit val intParser: Parser[Int] = _.toInt
@@ -14,4 +15,5 @@ object Parser {
     implicit val instantParser: Parser[Instant] = Instant.parse(_)
     implicit val durationParser: Parser[Duration] = Duration.parse(_)
   }
+
 }

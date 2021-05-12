@@ -17,4 +17,5 @@ class RecordFilterQueryParser @Inject() extends BaseParser[RecordField] {
       parser("lon", RecordField.LocationLon),
     )
   }
+
 }

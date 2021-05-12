@@ -6,10 +6,7 @@ import org.scalatestplus.play.{PlaySpec, WsScalaTestClient}
 import play.api.libs.ws.WSClient
 import play.api.test.Helpers._
 
-class GlobalErrorHandlerSpec
-  extends PlaySpec
-    with GuiceOneServerPerSuite
-    with WsScalaTestClient {
+class GlobalErrorHandlerSpec extends PlaySpec with GuiceOneServerPerSuite with WsScalaTestClient {
 
   implicit val wsClient = app.injector.instanceOf[WSClient]
 

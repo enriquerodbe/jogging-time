@@ -12,11 +12,13 @@ trait RecordService {
 
   def retrieve(
       maybeUserId: Option[Long],
-      filterOptions: FilterOptions[RecordField]): Future[Page[Record]]
+      filterOptions: FilterOptions[RecordField],
+  ): Future[Page[Record]]
 
   def retrieveReport(
       userId: Option[Long],
-      filter: FilterOptions[WeekReportField]): Future[Page[WeekReport]]
+      filter: FilterOptions[WeekReportField],
+  ): Future[Page[WeekReport]]
 
   def update(updatedRecord: Record): Future[Unit]
 

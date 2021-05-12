@@ -51,9 +51,7 @@ class UserFilterQueryParserSpec extends AnyFlatSpec with should.Matchers {
       "firstName eq 'Helge' and lastName eq 'Doppler'"
     val result = parser.parse(expr).get
     result shouldEqual
-      Or(
-        Ne(Email, "admin@jogging.com"),
-        And(Eq(FirstName, "Helge"), Eq(LastName, "Doppler")))
+      Or(Ne(Email, "admin@jogging.com"), And(Eq(FirstName, "Helge"), Eq(LastName, "Doppler")))
   }
 
   it should "parse parentheses" in {
@@ -61,9 +59,7 @@ class UserFilterQueryParserSpec extends AnyFlatSpec with should.Matchers {
       "and lastName eq 'Doppler'"
     val result = parser.parse(expr).get
     result shouldEqual
-      And(
-        Or(Ne(Email, "admin@jogging.com"), Eq(FirstName, "Helge")),
-        Eq(LastName, "Doppler"))
+      And(Or(Ne(Email, "admin@jogging.com"), Eq(FirstName, "Helge")), Eq(LastName, "Doppler"))
   }
 
   it should "fail on invalid filter" in {

@@ -16,7 +16,7 @@ import slick.jdbc.JdbcProfile
 import weather.{MockWeatherService, WeatherService}
 
 trait BaseSpec
-  extends PlaySpec
+    extends PlaySpec
     with GuiceOneAppPerSuite
     with Results
     with BeforeAndAfterAll
@@ -45,4 +45,5 @@ trait BaseSpec
     instanceOf[UsersFixture].insertUsers()
     instanceOf[RecordsFixture].insertRecords()
   }
+
 }

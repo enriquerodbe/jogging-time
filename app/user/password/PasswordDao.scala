@@ -8,10 +8,10 @@ import javax.inject.Inject
 import play.api.db.slick.DatabaseConfigProvider
 import scala.concurrent.{ExecutionContext, Future}
 
-class PasswordDao @Inject()(
-    val dbConfigProvider: DatabaseConfigProvider)(
-    implicit ec: ExecutionContext)
-  extends PasswordsTable with DelegableAuthInfoDAO[PasswordInfo] {
+class PasswordDao @Inject() (val dbConfigProvider: DatabaseConfigProvider)(
+    implicit ec: ExecutionContext
+) extends PasswordsTable
+    with DelegableAuthInfoDAO[PasswordInfo] {
 
   import profile.api._
 
@@ -28,30 +28,22 @@ class PasswordDao @Inject()(
     db.run(query)
   }
 
-  def addAction(
-      loginInfo: LoginInfo,
-      authInfo: PasswordInfo): DBIO[PasswordInfo] = {
-    val password = Password(
-      loginInfo.providerKey, authInfo.hasher, authInfo.password, authInfo.salt)
+  def addAction(loginInfo: LoginInfo, authInfo: PasswordInfo): DBIO[PasswordInfo] = {
+    val password =
+      Password(loginInfo.providerKey, authInfo.hasher, authInfo.password, authInfo.salt)
 
     (passwords += password).map(_ => authInfo)
   }
 
-  override def add(
-      loginInfo: LoginInfo,
-      authInfo: PasswordInfo): Future[PasswordInfo] = {
+  override def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
     db.run(addAction(loginInfo, authInfo))
   }
 
-  override def update(
-      loginInfo: LoginInfo,
-      authInfo: PasswordInfo): Future[PasswordInfo] = {
+  override def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
     db.run(updateAction(loginInfo, authInfo))
   }
 
-  def updateAction(
-      loginInfo: LoginInfo,
-      authInfo: PasswordInfo): DBIO[PasswordInfo] = {
+  def updateAction(loginInfo: LoginInfo, authInfo: PasswordInfo): DBIO[PasswordInfo] = {
     passwords
       .filter(_.userEmail === loginInfo.providerKey)
       .map(p => (p.hasher, p.hash, p.salt))
@@ -59,9 +51,7 @@ class PasswordDao @Inject()(
       .map(_ => authInfo)
   }
 
-  override def save(
-      loginInfo: LoginInfo,
-      authInfo: PasswordInfo): Future[PasswordInfo] = ???
+  override def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = ???
 
   def removeAction(loginInfo: LoginInfo): DBIO[Unit] = {
     passwords
@@ -73,4 +63,5 @@ class PasswordDao @Inject()(
   override def remove(loginInfo: LoginInfo): Future[Unit] = {
     db.run(removeAction(loginInfo))
   }
+
 }

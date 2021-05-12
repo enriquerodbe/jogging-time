@@ -14,4 +14,5 @@ class WeekReportFilterQueryParser @Inject() extends BaseParser[WeekReportField] 
       parser("distance", TotalDistance),
     )
   }
+
 }

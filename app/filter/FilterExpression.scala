@@ -10,11 +10,10 @@ object FilterExpression {
   case class Gt[T, F[_] <: Field[_]](field: F[T], value: T) extends FilterExpression[F]
   case class Lt[T, F[_] <: Field[_]](field: F[T], value: T) extends FilterExpression[F]
 
-  case class And[F[_] <: Field[_]](
-      expr1: FilterExpression[F],
-      expr2: FilterExpression[F]) extends FilterExpression[F]
+  case class And[F[_] <: Field[_]](expr1: FilterExpression[F], expr2: FilterExpression[F])
+      extends FilterExpression[F]
 
-  case class Or[F[_] <: Field[_]](
-      expr1: FilterExpression[F],
-      expr2: FilterExpression[F]) extends FilterExpression[F]
+  case class Or[F[_] <: Field[_]](expr1: FilterExpression[F], expr2: FilterExpression[F])
+      extends FilterExpression[F]
+
 }

@@ -12,14 +12,16 @@ trait BaseParser[F[_] <: Field[_]] extends RegexParsers {
   private def value = "'" ~> """[^']*""".r <~ "'" | """-?[0-9]+(\.[0-9]+)?""".r
 
   private def comparison: Parser[FilterExpression[F]] = {
-    fields.flatMap { case FieldParser(name, field, parser) =>
-      Seq(
-        name ~ "eq" ~ value ^^ { case _ ~ _ ~ v => Eq(field, parser.parse(v)) },
-        name ~ "ne" ~ value ^^ { case _ ~ _ ~ v => Ne(field, parser.parse(v)) },
-        name ~ "gt" ~ value ^^ { case _ ~ _ ~ v => Gt(field, parser.parse(v)) },
-        name ~ "lt" ~ value ^^ { case _ ~ _ ~ v => Lt(field, parser.parse(v)) },
-      )
-    }.reduce(_ | _)
+    fields
+      .flatMap { case FieldParser(name, field, parser) =>
+        Seq(
+          name ~ "eq" ~ value ^^ { case _ ~ _ ~ v => Eq(field, parser.parse(v)) },
+          name ~ "ne" ~ value ^^ { case _ ~ _ ~ v => Ne(field, parser.parse(v)) },
+          name ~ "gt" ~ value ^^ { case _ ~ _ ~ v => Gt(field, parser.parse(v)) },
+          name ~ "lt" ~ value ^^ { case _ ~ _ ~ v => Lt(field, parser.parse(v)) },
+        )
+      }
+      .reduce(_ | _)
   }
 
   private def factor: Parser[FilterExpression[F]] = {
@@ -27,9 +29,8 @@ trait BaseParser[F[_] <: Field[_]] extends RegexParsers {
   }
 
   private def term: Parser[FilterExpression[F]] = {
-    factor ~ rep("and" ~ factor) ^^ {
-      case comparison ~ list =>
-        list.foldLeft(comparison)((x, y) => And(x, y._2))
+    factor ~ rep("and" ~ factor) ^^ { case comparison ~ list =>
+      list.foldLeft(comparison)((x, y) => And(x, y._2))
     }
   }
 
@@ -48,4 +49,5 @@ trait BaseParser[F[_] <: Field[_]] extends RegexParsers {
   def parse(input: Option[String]): Try[FilterExpression[F]] = {
     input.map(parse).getOrElse(util.Success(Empty()))
   }
+
 }

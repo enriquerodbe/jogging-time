@@ -7,8 +7,8 @@ import javax.inject.{Inject, Singleton}
 import play.api.db.slick.DatabaseConfigProvider
 
 @Singleton
-private[user] class UserDao @Inject()(
-    val dbConfigProvider: DatabaseConfigProvider) extends UsersTable {
+private[user] class UserDao @Inject() (val dbConfigProvider: DatabaseConfigProvider)
+    extends UsersTable {
 
   import profile.api._
 

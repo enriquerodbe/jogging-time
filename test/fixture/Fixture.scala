@@ -44,6 +44,7 @@ object Fixture {
 
   val hasher = "bcrypt"
   val hash = "$2a$10$pjnp9/GDJxEv0tGYZRHpT.esEkQsfsq/z2TY3YpnoVpsOvzT4TE3m"
+
   val initialPasswords = Seq(
     Password(hannah.email, hasher, hash, None),
     Password(mikkel.email, hasher, hash, None),

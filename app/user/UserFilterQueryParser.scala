@@ -12,7 +12,8 @@ class UserFilterQueryParser @Inject() extends BaseParser[UserField] {
     Seq(
       parser("email", Email),
       parser("firstName", FirstName),
-      parser("lastName", LastName)
+      parser("lastName", LastName),
     )
   }
+
 }
