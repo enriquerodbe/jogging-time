@@ -10,15 +10,16 @@ import play.api.test.FakeRequest
 
 object Fixture {
 
-  private val fiveK = Distance(5_000)
-  private val eightK = Distance(8_000)
-  private val tenK = Distance(10_000)
-  private val eightDaysAgo = Instant.now().minus(8, DAYS)
-  private val threeDaysAgo = Instant.now().minus(3, DAYS)
-  private val oneDayAgo = Instant.now().minus(1, DAYS)
-  private val thirtyMin = Duration.ofMinutes(30)
-  private val fortyMin = Duration.ofMinutes(40)
-  private val sixtyMin = Duration.ofMinutes(60)
+  val fiveK = Distance(5_000)
+  val eightK = Distance(8_000)
+  val tenK = Distance(10_000)
+  val today = Instant.parse("2020-08-12T00:00:00Z")
+  val eightDaysAgo = today.minus(8, DAYS)
+  val threeDaysAgo = today.minus(3, DAYS)
+  val oneDayAgo = today.minus(1, DAYS)
+  val thirtyMin = Duration.ofMinutes(30)
+  val fortyMin = Duration.ofMinutes(40)
+  val sixtyMin = Duration.ofMinutes(60)
 
   val admin = User(1, "admin@jogging.com", "Admin", "Admin", Set(Admin))
   val hannah = User(2, "hannah@dark.io", "Hannah", "Kahnwald", Set(Manager))

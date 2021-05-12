@@ -1,7 +1,7 @@
 package record
 
 import domain.Distance
-import fixture.Fixture.adminRequest
+import fixture.Fixture.{adminRequest, today}
 import fixture.{BaseSpec, Fixture}
 import java.time.temporal.ChronoUnit
 import java.time.{Duration, Instant}
@@ -21,7 +21,7 @@ class RecordFunctionalSpec extends BaseSpec {
       val requestBody =
         RecordDto(
           None,
-          Instant.now(),
+          today,
           Distance(3500),
           Duration.ofMinutes(15),
           Fixture.location)
@@ -47,7 +47,7 @@ class RecordFunctionalSpec extends BaseSpec {
       val requestBody =
         RecordDto(
           None,
-          Instant.now().minus(6, ChronoUnit.DAYS),
+          today.minus(6, ChronoUnit.DAYS),
           Distance(3500),
           Duration.ofMinutes(15),
           Fixture.location)
@@ -72,7 +72,7 @@ class RecordFunctionalSpec extends BaseSpec {
       val requestBody =
         RecordDto(
           Some(Fixture.jonas.id),
-          Instant.now(),
+          today,
           Distance(3500),
           Duration.ofMinutes(15),
           Fixture.location)
@@ -92,7 +92,7 @@ class RecordFunctionalSpec extends BaseSpec {
       val requestBody =
         RecordDto(
           Some(Fixture.jonas.id),
-          Instant.now(),
+          today,
           Distance(3500),
           Duration.ofMinutes(15),
           Fixture.location)
@@ -129,19 +129,19 @@ class RecordFunctionalSpec extends BaseSpec {
     "filter complex query" in {
       val request = FakeRequest().withHeaders(Fixture.hannahAuthHeader)
       val filter = Some(
-        "((duration lt 'PT40M' or distance lt 5000) and date ne '2020-08-08T00:00:00Z') and " +
-          "date lt '2020-08-08T00:00:00Z' and (duration ne 'PT25M' and lon gt 10.1)")
+        s"((duration lt 'PT40M' or distance lt 5000) and date ne '${today.toString}') and " +
+          s"date lt '${today.toString}' and (duration ne 'PT25M' and lon gt 10.1)")
       val limit = None
       val offset = None
 
       val response = recordController.retrieve(filter, limit, offset)(request)
       val json = contentAsJson(response)
 
-      (json \ "count").as[Int] mustEqual 1
+      (json \ "count").as[Int] mustEqual 2
       (json \ "results").as[Seq[JsObject]].foreach { result =>
         (result \ "duration").as[Duration] must be < Duration.ofMinutes(40)
         (result \ "duration").as[Duration] must not equal Duration.ofMinutes(25)
-        (result \ "date").as[Instant] must be < Instant.parse("2020-08-08T00:00:00Z")
+        (result \ "date").as[Instant] must be < today
       }
     }
     "skip offset results" in {
@@ -241,7 +241,7 @@ class RecordFunctionalSpec extends BaseSpec {
       val updatedRecord =
         RecordDto(
           None,
-          Instant.now(),
+          today,
           Distance(4990),
           Duration.ofMinutes(30),
           Fixture.location)
