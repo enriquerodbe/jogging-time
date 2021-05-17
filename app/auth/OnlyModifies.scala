@@ -15,6 +15,7 @@ case class OnlyModifies(role: UserRole) extends Authorization[User, DummyAuthent
   ): Future[Boolean] = {
     val result = request.body match {
       case UserRoleDto(add, remove) => (add ++ remove).forall(_ == role)
+      case _ => false
     }
     Future.successful(result)
   }
