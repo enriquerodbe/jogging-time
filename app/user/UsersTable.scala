@@ -1,10 +1,12 @@
 package user
 
-import domain.{User, UserRole}
 import domain.UserRole.UserRole
-import filter.database.{FilterDao, FilterTable, FilterColumn}
+import domain.{User, UserRole}
+import filter.database.{FilterColumn, FilterTable}
+import play.api.db.slick.HasDatabaseConfigProvider
+import slick.jdbc.JdbcProfile
 
-trait UsersTable extends FilterDao[UserField] {
+trait UsersTable extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import profile.api._
 

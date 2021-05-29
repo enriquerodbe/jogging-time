@@ -1,10 +1,12 @@
 package record
 
 import domain._
-import filter.database.{FilterDao, FilterTable, FilterColumn}
+import filter.database.{FilterColumn, FilterTable}
 import java.time.{Duration, Instant}
+import play.api.db.slick.HasDatabaseConfigProvider
+import slick.jdbc.JdbcProfile
 
-trait RecordsTable extends FilterDao[RecordField] {
+trait RecordsTable extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import profile.api._
 

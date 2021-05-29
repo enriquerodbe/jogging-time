@@ -14,6 +14,7 @@ private[record] class RecordServiceImpl @Inject() (
     val dbConfigProvider: DatabaseConfigProvider,
     weatherService: WeatherService,
     recordDao: RecordDao,
+    reportDao: ReportDao,
 )(implicit ec: ExecutionContext)
     extends RecordService
     with HasDatabaseConfigProvider[JdbcProfile] {
@@ -53,8 +54,8 @@ private[record] class RecordServiceImpl @Inject() (
       filter: FilterOptions[WeekReportField],
   ): Future[Page[WeekReport]] = {
     val query = for {
-      results <- recordDao.retrieveReport(userId, filter)
-      total <- recordDao.countReport(userId, filter)
+      results <- reportDao.retrieveReport(userId, filter)
+      total <- reportDao.countReport(userId, filter)
     } yield Page(results, total, results.size, filter.offset)
 
     db.run(query)
