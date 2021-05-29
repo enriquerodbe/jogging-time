@@ -24,15 +24,14 @@ class ReportDao @Inject() (
   def retrieveReport(
       userId: Option[Long],
       filter: FilterOptions[WeekReportField],
-  ): DBIO[Seq[WeekReport]] = {
+  ): DBIO[Seq[WeekReport]] =
     retrieveReportQuery(userId, filter)
       .drop(filter.offset)
       .take(filter.limit)
       .result
       .map(_.map((WeekReport.apply _).tupled))
-  }
 
-  private def retrieveReportQuery(userId: Option[Long], filter: FilterOptions[WeekReportField]) = {
+  private def retrieveReportQuery(userId: Option[Long], filter: FilterOptions[WeekReportField]) =
     records
       .filterOpt(userId)(_.userId === _)
       .groupBy(r => (year(r.date), week(r.date)))
@@ -44,7 +43,6 @@ class ReportDao @Inject() (
       .filter { case (_, _, avgSpeed, totalDistance) =>
         reportConditionBuilder(filter.condition)(reportTable(avgSpeed, totalDistance))
       }
-  }
 
   private def reportTable(avgSpeed: Rep[Option[Speed]], totalDistance: Rep[Option[Distance]]) =
     new FilterTable[WeekReportField] {
@@ -57,8 +55,7 @@ class ReportDao @Inject() (
 
     }
 
-  def countReport(userId: Option[Long], filter: FilterOptions[WeekReportField]): DBIO[Int] = {
+  def countReport(userId: Option[Long], filter: FilterOptions[WeekReportField]): DBIO[Int] =
     retrieveReportQuery(userId, filter).length.result
-  }
 
 }

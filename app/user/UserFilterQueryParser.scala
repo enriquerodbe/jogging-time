@@ -8,12 +8,11 @@ import user.UserField.{Email, FirstName, LastName}
 
 class UserFilterQueryParser @Inject() extends BaseParser[UserField] {
 
-  override protected val fields: Seq[FieldParser[_, UserField]] = {
+  override protected val fields: Seq[FieldParser[_, UserField]] =
     Seq(
       parser("email", Email),
       parser("firstName", FirstName),
       parser("lastName", LastName),
     )
-  }
 
 }

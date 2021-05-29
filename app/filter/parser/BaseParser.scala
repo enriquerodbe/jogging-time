@@ -11,7 +11,7 @@ trait BaseParser[F[_] <: Field[_]] extends RegexParsers {
 
   private def value = "'" ~> """[^']*""".r <~ "'" | """-?[0-9]+(\.[0-9]+)?""".r
 
-  private def comparison: Parser[FilterExpression[F]] = {
+  private def comparison: Parser[FilterExpression[F]] =
     fields
       .flatMap { case FieldParser(name, field, parser) =>
         Seq(
@@ -22,32 +22,27 @@ trait BaseParser[F[_] <: Field[_]] extends RegexParsers {
         )
       }
       .reduce(_ | _)
-  }
 
-  private def factor: Parser[FilterExpression[F]] = {
+  private def factor: Parser[FilterExpression[F]] =
     comparison | "(" ~> expr <~ ")"
-  }
 
-  private def term: Parser[FilterExpression[F]] = {
+  private def term: Parser[FilterExpression[F]] =
     factor ~ rep("and" ~ factor) ^^ { case comparison ~ list =>
       list.foldLeft(comparison)((x, y) => And(x, y._2))
     }
-  }
 
   private def expr: Parser[FilterExpression[F]] = term ~ rep("or" ~ expr) ^^ {
     case comparison ~ list => list.foldLeft(comparison)((x, y) => Or(x, y._2))
   }
 
-  def parse(input: String): Try[FilterExpression[F]] = {
+  def parse(input: String): Try[FilterExpression[F]] =
     parseAll(expr, input) match {
       case Success(filterExpression, _) => util.Success(filterExpression)
       case Failure(msg, _) => util.Failure(ParseException(msg))
       case Error(msg, _) => util.Failure(ParseException(msg))
     }
-  }
 
-  def parse(input: Option[String]): Try[FilterExpression[F]] = {
+  def parse(input: Option[String]): Try[FilterExpression[F]] =
     input.map(parse).getOrElse(util.Success(Empty()))
-  }
 
 }

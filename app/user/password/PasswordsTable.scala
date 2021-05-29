@@ -14,9 +14,8 @@ trait PasswordsTable extends HasDatabaseConfigProvider[JdbcProfile] {
     def hash = column[String]("hash")
     def salt = column[Option[String]]("salt")
 
-    def * = {
+    def * =
       (userEmail, hasher, hash, salt).<>(Password.tupled, Password.unapply)
-    }
 
   }
 

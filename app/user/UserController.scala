@@ -48,27 +48,24 @@ class UserController @Inject() (
       } yield Ok(Json.toJson(result))
     }
 
-  def update(id: Long) = {
+  def update(id: Long) =
     isManagerOrAdmin.async(parse.json[UpdateUserDto]) { request =>
       userService.update(request.body.user.copy(id = id)).map(_ => NoContent)
     }
-  }
 
-  def updateRoles(id: Long) = {
+  def updateRoles(id: Long) =
     canPromoteUser.async(parse.json[UserRoleDto]) { request =>
       userService
         .updateRoles(id, request.body.add, request.body.remove)
         .map(_ => NoContent)
     }
-  }
 
-  def updatePassword() = {
+  def updatePassword() =
     silhouette.SecuredAction.async(parse.json[ChangePasswordDto]) { request =>
       userService
         .updatePassword(request.identity.id, request.body.password)
         .map(_ => NoContent)
     }
-  }
 
   def delete(id: Long) = isManagerOrAdmin.async {
     userService.delete(id).map(_ => NoContent)

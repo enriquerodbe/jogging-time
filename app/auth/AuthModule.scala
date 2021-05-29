@@ -35,25 +35,21 @@ class AuthModule extends AbstractModule with ScalaModule {
       authenticatorService: AuthenticatorService[DummyAuthenticator],
       requestProvider: RequestProvider,
       eventBus: EventBus,
-  ): Environment[AuthEnv] = {
+  ): Environment[AuthEnv] =
     Environment[AuthEnv](userService, authenticatorService, Seq(requestProvider), eventBus)
-  }
 
   @Provides
   def provideAuthInfoRepository(
       passwordDao: DelegableAuthInfoDAO[PasswordInfo]
-  ): AuthInfoRepository = {
+  ): AuthInfoRepository =
     new DelegableAuthInfoRepository(passwordDao)
-  }
 
   @Provides
-  def providePasswordHasherRegistry(passwordHasher: PasswordHasher): PasswordHasherRegistry = {
+  def providePasswordHasherRegistry(passwordHasher: PasswordHasher): PasswordHasherRegistry =
     PasswordHasherRegistry(passwordHasher)
-  }
 
   @Provides
-  def providePasswordDao(db: DatabaseConfigProvider): DelegableAuthInfoDAO[PasswordInfo] = {
+  def providePasswordDao(db: DatabaseConfigProvider): DelegableAuthInfoDAO[PasswordInfo] =
     new PasswordDao(db)
-  }
 
 }

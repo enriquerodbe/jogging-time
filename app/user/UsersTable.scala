@@ -23,10 +23,8 @@ trait UsersTable extends HasDatabaseConfigProvider[JdbcProfile] {
     def lastName = column[String]("lastName")
     def roles = column[Set[UserRole]]("roles")
 
-    override def * = {
-      (id, email, firstName, lastName, roles)
-        .<>((User.apply _).tupled, User.unapply)
-    }
+    override def * =
+      (id, email, firstName, lastName, roles) <> ((User.apply _).tupled, User.unapply)
 
     override def getFilterColumn[T](field: UserField[T]): FilterColumn[T] =
       field match {

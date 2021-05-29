@@ -42,13 +42,12 @@ class RecordController @Inject() (
   implicit val weekReportWrites = Json.writes[WeekReport]
   implicit val weekReportPageWrites = Json.writes[Page[WeekReport]]
 
-  def create() = {
+  def create() =
     silhouette.SecuredAction.async(parse.json[RecordDto]) { request =>
       val ownerId = getRecordOwnerId(request)
       val newRecord = request.body.record.copy(userId = ownerId)
       recordService.create(newRecord).map(r => Created(Json.toJson(r)))
     }
-  }
 
   def retrieve(filter: Option[String], limit: Option[Int], offset: Option[Int]) =
     silhouette.SecuredAction.async { request =>
@@ -76,14 +75,13 @@ class RecordController @Inject() (
     } yield Ok(Json.toJson(result))
   }
 
-  def update(recordId: Long) = {
+  def update(recordId: Long) =
     silhouette.SecuredAction.async(parse.json[RecordDto]) { request =>
       val ownerId = getRecordOwnerId(request)
       val record = request.body.record
       val updatedRecord = record.copy(id = recordId, userId = ownerId)
       recordService.update(updatedRecord).map(_ => NoContent)
     }
-  }
 
   def delete(recordId: Long) = silhouette.SecuredAction.async { request =>
     val loggedUser = request.identity

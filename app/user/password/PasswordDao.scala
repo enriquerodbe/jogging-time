@@ -15,7 +15,7 @@ class PasswordDao @Inject() (val dbConfigProvider: DatabaseConfigProvider)(
 
   import profile.api._
 
-  override implicit val classTag = scala.reflect.classTag[PasswordInfo]
+  implicit override val classTag = scala.reflect.classTag[PasswordInfo]
 
   override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
     val query =
@@ -35,33 +35,28 @@ class PasswordDao @Inject() (val dbConfigProvider: DatabaseConfigProvider)(
     (passwords += password).map(_ => authInfo)
   }
 
-  override def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
+  override def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] =
     db.run(addAction(loginInfo, authInfo))
-  }
 
-  override def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
+  override def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] =
     db.run(updateAction(loginInfo, authInfo))
-  }
 
-  def updateAction(loginInfo: LoginInfo, authInfo: PasswordInfo): DBIO[PasswordInfo] = {
+  def updateAction(loginInfo: LoginInfo, authInfo: PasswordInfo): DBIO[PasswordInfo] =
     passwords
       .filter(_.userEmail === loginInfo.providerKey)
       .map(p => (p.hasher, p.hash, p.salt))
       .update((authInfo.hasher, authInfo.password, authInfo.salt))
       .map(_ => authInfo)
-  }
 
   override def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = ???
 
-  def removeAction(loginInfo: LoginInfo): DBIO[Unit] = {
+  def removeAction(loginInfo: LoginInfo): DBIO[Unit] =
     passwords
       .filter(_.userEmail === loginInfo.providerKey)
       .delete
       .map(_ => ())
-  }
 
-  override def remove(loginInfo: LoginInfo): Future[Unit] = {
+  override def remove(loginInfo: LoginInfo): Future[Unit] =
     db.run(removeAction(loginInfo))
-  }
 
 }

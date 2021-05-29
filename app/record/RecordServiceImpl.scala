@@ -61,16 +61,13 @@ private[record] class RecordServiceImpl @Inject() (
     db.run(query)
   }
 
-  override def update(record: Record): Future[Unit] = {
+  override def update(record: Record): Future[Unit] =
     db.run(recordDao.update(record)).map(_ => ())
-  }
 
-  override def delete(recordId: Long): Future[Unit] = {
+  override def delete(recordId: Long): Future[Unit] =
     db.run(recordDao.delete(recordId)).map(_ => ())
-  }
 
-  override def delete(userId: Long, recordId: Long): Future[Unit] = {
+  override def delete(userId: Long, recordId: Long): Future[Unit] =
     db.run(recordDao.delete(userId, recordId)).map(_ => ())
-  }
 
 }

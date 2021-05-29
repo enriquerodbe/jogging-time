@@ -16,11 +16,10 @@ import scala.concurrent.duration.DurationInt
 
 class OpenWeatherMapClientSpec extends BaseSpec {
 
-  override def fakeApplication(): Application = {
+  override def fakeApplication(): Application =
     GuiceApplicationBuilder()
       .configure("openWeatherMap.baseUrl" -> "")
       .build()
-  }
 
   val config = instanceOf[Config]
 

@@ -52,9 +52,8 @@ object Fixture {
     Password(helge.email, hasher, hash, None),
   )
 
-  def buildBasicAuthHeader(email: String, pass: String): Headers = {
+  def buildBasicAuthHeader(email: String, pass: String): Headers =
     Headers("Authorization" -> s"Basic ${Base64.encode(s"$email:$pass")}")
-  }
 
   val adminAuthHeader = buildBasicAuthHeader(admin.email, "test")
   val hannahAuthHeader = buildBasicAuthHeader(hannah.email, "test")

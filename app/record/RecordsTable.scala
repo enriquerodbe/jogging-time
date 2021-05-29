@@ -32,19 +32,27 @@ trait RecordsTable extends HasDatabaseConfigProvider[JdbcProfile] {
     def humidity = column[Option[Int]]("humidity")
     def windSpeed = column[Option[BigDecimal]]("windSpeed")
 
-    def location = {
-      (locationLat, locationLon).<>(Location.tupled, Location.unapply)
+    def location = (locationLat, locationLon) <> (Location.tupled, Location.unapply)
+
+    private def weatherConditionsFromValues(
+        maybeTemperature: Option[BigDecimal],
+        maybeHumidity: Option[Int],
+        maybeWindSpeed: Option[BigDecimal],
+    ) = (maybeTemperature, maybeHumidity, maybeWindSpeed) match {
+      case (Some(temperature), Some(humidity), Some(windSpeed)) =>
+        Some(WeatherConditions(temperature, humidity, windSpeed))
+      case _ => None
     }
 
-    def weather = {
+    private def weatherConditionsToTuple(weather: Option[WeatherConditions]) =
+      Some((weather.map(_.temperature), weather.map(_.humidity), weather.map(_.windSpeed)))
+
+    def weather =
       (temperature, humidity, windSpeed)
-        .<>((WeatherConditions.fromValues _).tupled, WeatherConditions.toTuple)
-    }
+        .<>((weatherConditionsFromValues _).tupled, weatherConditionsToTuple)
 
-    def * = {
-      (id, userId, date, distance, duration, location, weather)
-        .<>(Record.tupled, Record.unapply)
-    }
+    def * =
+      (id, userId, date, distance, duration, location, weather) <> (Record.tupled, Record.unapply)
 
     override def getFilterColumn[T](field: RecordField[T]): FilterColumn[T] =
       field match {

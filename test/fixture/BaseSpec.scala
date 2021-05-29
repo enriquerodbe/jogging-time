@@ -23,11 +23,10 @@ trait BaseSpec
     with FutureAwaits
     with DefaultAwaitTimeout {
 
-  override def fakeApplication(): Application = {
+  override def fakeApplication(): Application =
     GuiceApplicationBuilder()
       .overrides(bind[WeatherService].to[MockWeatherService])
       .build()
-  }
 
   protected def instanceOf[T: ClassTag]: T = app.injector.instanceOf[T]
 
@@ -35,9 +34,8 @@ trait BaseSpec
   val database = instanceOf[DBApi].database("default")
   import dbConfig.profile.api._
 
-  protected def execute[T](query: Query[_, T, Seq]): Seq[T] = {
+  protected def execute[T](query: Query[_, T, Seq]): Seq[T] =
     await(dbConfig.db.run(query.result))
-  }
 
   override def beforeAll(): Unit = {
     Evolutions.cleanupEvolutions(database)

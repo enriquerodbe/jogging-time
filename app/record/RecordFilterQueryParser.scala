@@ -8,7 +8,7 @@ import record.Parser.Instances.distanceParser
 
 class RecordFilterQueryParser @Inject() extends BaseParser[RecordField] {
 
-  override protected val fields: Seq[FieldParser[_, RecordField]] = {
+  override protected val fields: Seq[FieldParser[_, RecordField]] =
     Seq(
       parser("date", RecordField.Date),
       parser("distance", RecordField.Distance),
@@ -16,6 +16,5 @@ class RecordFilterQueryParser @Inject() extends BaseParser[RecordField] {
       parser("lat", RecordField.LocationLat),
       parser("lon", RecordField.LocationLon),
     )
-  }
 
 }

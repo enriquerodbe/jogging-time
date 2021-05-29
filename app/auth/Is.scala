@@ -11,8 +11,7 @@ case class Is(role: UserRole) extends Authorization[User, DummyAuthenticator] {
 
   override def isAuthorized[T](identity: User, authenticator: DummyAuthenticator)(
       implicit request: Request[T]
-  ): Future[Boolean] = {
+  ): Future[Boolean] =
     Future.successful(identity.roles.contains(role))
-  }
 
 }

@@ -8,8 +8,7 @@ object FilterOptions {
       condition: FilterExpression[F],
       limit: Option[Int] = None,
       offset: Option[Int] = None,
-  ): FilterOptions[F] = {
+  ): FilterOptions[F] =
     new FilterOptions(condition, limit.getOrElse(100), offset.getOrElse(0))
-  }
 
 }

@@ -18,13 +18,13 @@ private[weather] class OpenWeatherMapClient @Inject() (ws: WSClient, config: Con
   val appId = config.getString("openWeatherMap.appid")
   val timeout = config.getDuration("openWeatherMap.timeout")
 
-  private implicit val weatherConditionsReads: Reads[WeatherConditions] = (
+  implicit private val weatherConditionsReads: Reads[WeatherConditions] = (
     (__ \ "temp").read[BigDecimal] and
       (__ \ "humidity").read[Int] and
       (__ \ "wind_speed").read[BigDecimal]
   )(WeatherConditions.apply _)
 
-  override def retrieve(location: Location, date: Instant): Future[WeatherConditions] = {
+  override def retrieve(location: Location, date: Instant): Future[WeatherConditions] =
     ws.url(s"$baseUrl/data/2.5/onecall/timemachine")
       .withQueryStringParameters(
         "lat" -> location.lat.toString,
@@ -37,6 +37,5 @@ private[weather] class OpenWeatherMapClient @Inject() (ws: WSClient, config: Con
       .get()
       .map(_.json \ "current")
       .map(_.validate[WeatherConditions].get)
-  }
 
 }

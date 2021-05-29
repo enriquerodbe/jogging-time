@@ -8,11 +8,10 @@ import record.WeekReportField.{AverageSpeed, TotalDistance}
 
 class WeekReportFilterQueryParser @Inject() extends BaseParser[WeekReportField] {
 
-  override protected val fields: Seq[FieldParser[_, WeekReportField]] = {
+  override protected val fields: Seq[FieldParser[_, WeekReportField]] =
     Seq(
       parser("avgSpeed", AverageSpeed),
       parser("distance", TotalDistance),
     )
-  }
 
 }

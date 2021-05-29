@@ -46,9 +46,8 @@ private[user] class UserServiceImpl @Inject() (
     db.run(query)
   }
 
-  override def update(user: User): Future[Unit] = {
+  override def update(user: User): Future[Unit] =
     db.run(userDao.update(user)).map(_ => ())
-  }
 
   override def updateRoles(
       userId: Long,

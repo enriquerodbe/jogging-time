@@ -11,7 +11,7 @@ case class RecordDto(
     location: Location,
 ) {
 
-  def record: Record = {
+  def record: Record =
     Record(
       -1,
       userId.getOrElse(-1),
@@ -21,6 +21,5 @@ case class RecordDto(
       location,
       None,
     )
-  }
 
 }
